@@ -1,6 +1,6 @@
 // src/pages/Signup.jsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import api from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 
@@ -111,6 +111,19 @@ export default function Signup() {
               </div>
             </div>
           )}
+
+          {/* Already have an account section */}
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              Already have an account?{" "}
+              <Link 
+                to="/login" 
+                className="font-medium text-blue-600 hover:text-blue-500"
+              >
+                Sign in
+              </Link>
+            </p>
+          </div>
         </form>
       </div>
     </div>
