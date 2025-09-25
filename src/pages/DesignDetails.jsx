@@ -32,7 +32,7 @@ export default function DesignDetails() {
     const fetchDesign = async () => {
       try {
         // This matches your Flask route: /designs/<int:design_id>
-        const response = await api.get(`/designs/${id}`);
+        const response = await api.get(`/api/designs/${id}`);
         setDesign(response.data);
       } catch (err) {
         console.error("Error fetching design details:", err);
