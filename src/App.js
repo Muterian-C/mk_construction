@@ -14,6 +14,7 @@ import CartPage from "./pages/CartPage";
 import { CartProvider } from "./context/CartContext";  // ✅ add this
 import ManageDesigns from "./pages/admin/ManageDesign";
 import EditDesign from "./pages/admin/EditDesign";
+import ManageUsers from "./pages/admin/ManageUsers";
 
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
             <Route path="/admin/add-design" element={<AddDesign />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/admin/designs" element={<ManageDesigns/>}/>
+            <Route path="/admin/users" element={<ManageUsers/>}/>
             <Route path="/admin/edit-design/:id" element={<EditDesign />} />
 
             {/* User dashboard */}
