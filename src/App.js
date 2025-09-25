@@ -15,6 +15,7 @@ import { CartProvider } from "./context/CartContext";  // ✅ add this
 import ManageDesigns from "./pages/admin/ManageDesign";
 import EditDesign from "./pages/admin/EditDesign";
 import ManageUsers from "./pages/admin/ManageUsers";
+import Footer from "./pages/Footer";
 
 
 function App() {
@@ -56,6 +57,7 @@ function App() {
               }
             />
           </Routes>
+          <Footer />
         </Router>
       </CartProvider>
     </AuthProvider>
