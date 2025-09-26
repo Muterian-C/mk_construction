@@ -159,20 +159,41 @@ const ManageUsers = () => {
     }
   };
 
-  const handleToggleStatus = async (user) => {
-    try {
-      await axios.put(`/api/users/${user.id}`, {
-        is_active: !user.is_active
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      fetchUsers();
-    } catch (err) {
-      console.error("Error toggling user status:", err);
-      alert("Error updating user status: " + (err.response?.data?.error || err.message));
+const handleToggleStatus = async (user) => {
+  try {
+    console.log('🔄 Toggling status for user:', user.id, 'Current status:', user.is_active);
+    
+    const response = await axios.put(`/api/users/${user.id}`, {
+      is_active: !user.is_active
+    }, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    
+    console.log('✅ Status toggle response:', response.data);
+    alert(`User ${!user.is_active ? 'activated' : 'deactivated'} successfully!`);
+    fetchUsers();
+    
+  } catch (err) {
+    console.error("❌ Error toggling user status:", err);
+    
+    // More detailed error handling
+    let errorMessage = "Unknown error occurred";
+    
+    if (err.response) {
+      // Server responded with error status
+      errorMessage = err.response.data?.error || 
+                    `Server error: ${err.response.status} ${err.response.statusText}`;
+    } else if (err.request) {
+      // Request made but no response received
+      errorMessage = "No response from server. Check your connection.";
+    } else {
+      // Something else happened
+      errorMessage = err.message;
     }
-  };
-
+    
+    alert(`Error updating user status: ${errorMessage}`);
+  }
+};
   const handleUpdateRole = async (user) => {
     const newRole = prompt("Enter new role (admin/user):", user.role);
     if (newRole && ["admin", "user"].includes(newRole.toLowerCase())) {

@@ -1,9 +1,52 @@
 // src/pages/Home.jsx
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Pagination, Navigation } from 'swiper/modules';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
 
 export default function Home() {
   const { user } = useAuth();
+
+  // Carousel data
+  const carouselItems = [
+    {
+      id: 1,
+      title: "Modern Residential Designs",
+      description: "Contemporary homes with innovative layouts and sustainable features",
+      image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
+      cta: "View Residential Designs",
+      link: "/designs?category=residential"
+    },
+    {
+      id: 2,
+      title: "Commercial Excellence",
+      description: "Professional spaces designed for productivity and brand identity",
+      image: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
+      cta: "Explore Commercial Projects",
+      link: "/designs?category=commercial"
+    },
+    {
+      id: 3,
+      title: "Custom Architectural Solutions",
+      description: "Tailored designs to match your unique vision and requirements",
+      image: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
+      cta: "Start Custom Project",
+      link: "/contact"
+    },
+    {
+      id: 4,
+      title: "Sustainable Architecture",
+      description: "Eco-friendly designs that harmonize with environment",
+      image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
+      cta: "Learn About Sustainability",
+      link: "/about"
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-red-50 to-gray-100">
@@ -89,6 +132,105 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Featured Designs Carousel Section */}
+      <section className="py-20 relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-red-50">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-gray-900 to-red-800 bg-clip-text text-transparent">
+              Featured Designs
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Explore our most popular architectural masterpieces
+            </p>
+          </div>
+
+          <Swiper
+            spaceBetween={30}
+            centeredSlides={true}
+            autoplay={{
+              delay: 5000,
+              disableOnInteraction: false,
+            }}
+            pagination={{
+              clickable: true,
+              dynamicBullets: true,
+            }}
+            navigation={true}
+            modules={[Autoplay, Pagination, Navigation]}
+            className="mySwiper rounded-3xl shadow-2xl"
+            breakpoints={{
+              640: {
+                slidesPerView: 1,
+                spaceBetween: 20,
+              },
+              768: {
+                slidesPerView: 1,
+                spaceBetween: 30,
+              },
+              1024: {
+                slidesPerView: 1,
+                spaceBetween: 40,
+              },
+            }}
+          >
+            {carouselItems.map((item) => (
+              <SwiperSlide key={item.id}>
+                <div className="relative h-96 md:h-[500px] rounded-3xl overflow-hidden">
+                  <img 
+                    src={item.image} 
+                    alt={item.title}
+                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+                  <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                    <div className="max-w-2xl mx-auto text-center">
+                      <h3 className="text-3xl md:text-4xl font-bold mb-4">{item.title}</h3>
+                      <p className="text-lg md:text-xl mb-6 opacity-90">{item.description}</p>
+                      <Link
+                        to={item.link}
+                        className="inline-flex items-center bg-gradient-to-r from-red-600 to-red-800 text-white px-8 py-3 rounded-2xl font-semibold hover:from-red-500 hover:to-red-700 transform hover:scale-105 transition-all duration-300 shadow-lg"
+                      >
+                        {item.cta}
+                        <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+
+          {/* Custom Swiper Styles */}
+          <style jsx>{`
+            .swiper-pagination-bullet {
+              background: white;
+              opacity: 0.5;
+              width: 12px;
+              height: 12px;
+            }
+            .swiper-pagination-bullet-active {
+              background: #dc2626;
+              opacity: 1;
+            }
+            .swiper-button-next,
+            .swiper-button-prev {
+              color: white;
+              background: rgba(0, 0, 0, 0.5);
+              width: 50px;
+              height: 50px;
+              border-radius: 50%;
+              backdrop-filter: blur(10px);
+            }
+            .swiper-button-next:after,
+            .swiper-button-prev:after {
+              font-size: 20px;
+            }
+          `}</style>
+        </div>
+      </section>
+
       {/* Services Section */}
       <section className="py-20 relative">
         <div className="container mx-auto px-6">
@@ -142,7 +284,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats Section - FIXED SVG URL */}
+      {/* Stats Section */}
       <section className="py-20 bg-gradient-to-r from-gray-900 to-black text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22%23ffffff%22 fill-opacity=%220.03%22%3E%3Cpath d=%22M20 20c0 4.4-3.6 8-8 8s-8-3.6-8-8 3.6-8 8-8 8 3.6 8 8zm0-20c0 4.4-3.6 8-8 8s-8-3.6-8-8 3.6-8 8-8 8 3.6 8 8z%22/%3E%3C/g%3E%3C/svg%3E')]"></div>
         <div className="container relative mx-auto px-6">
