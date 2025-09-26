@@ -16,14 +16,19 @@ export default function Navbar() {
     <nav className="bg-gradient-to-r from-gray-900 to-black text-white shadow-lg relative z-50 border-b border-red-600/30">
       <div className="container mx-auto flex justify-between items-center px-4 py-3 relative z-50">
         {/* Logo / Brand */}
-        <Link 
-          to="/" 
+        <Link
+          to="/"
           className="flex items-center space-x-2 group"
           onClick={() => setMobileOpen(false)}
         >
           <div className="relative">
             <div className="w-10 h-10 bg-gradient-to-r from-red-600 to-red-800 rounded-lg flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300">
-              <span className="font-bold text-white text-lg">MK</span>
+              <img
+                src="/mk_construction_logo_no_contact.jpeg"   // note the leading slash
+                alt="MK Construction"
+                className="w-10 h-10 object-cover rounded-lg"
+              />
+
             </div>
             <div className="absolute -inset-1 bg-red-500/20 rounded-lg blur-sm group-hover:blur-md transition-all duration-300"></div>
           </div>
@@ -37,16 +42,16 @@ export default function Navbar() {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-1">
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="px-4 py-2 rounded-lg hover:bg-red-900/30 hover:text-red-200 transition-all duration-300 font-medium relative group"
           >
             Home
             <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-red-500 group-hover:w-4/5 group-hover:left-[10%] transition-all duration-300"></span>
           </Link>
-          
-          <Link 
-            to="/designs" 
+
+          <Link
+            to="/designs"
             className="px-4 py-2 rounded-lg hover:bg-red-900/30 hover:text-red-200 transition-all duration-300 font-medium relative group"
           >
             Gallery
@@ -54,8 +59,8 @@ export default function Navbar() {
           </Link>
 
           {/* Cart with badge */}
-          <Link 
-            to="/cart" 
+          <Link
+            to="/cart"
             className="relative px-4 py-2 rounded-lg hover:bg-red-900/30 hover:text-red-200 transition-all duration-300 font-medium group flex items-center space-x-1"
           >
             <FaShoppingCart className="text-lg" />
@@ -69,8 +74,8 @@ export default function Navbar() {
 
           {/* Admin Dashboard Link */}
           {user && user.role === "admin" && (
-            <Link 
-              to="/admin/dashboard" 
+            <Link
+              to="/admin/dashboard"
               className="px-4 py-2 rounded-lg hover:bg-red-900/30 hover:text-red-200 transition-all duration-300 font-medium relative group flex items-center space-x-1"
             >
               <FaCrown className="text-yellow-400" />
@@ -127,20 +132,19 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         <div
-          className={`${
-            mobileOpen
+          className={`${mobileOpen
               ? "flex flex-col absolute top-full left-0 w-full bg-gradient-to-b from-gray-900 to-black shadow-2xl border-t border-red-600/30 px-6 py-6 space-y-4 z-40"
               : "hidden"
-          } md:hidden`}
+            } md:hidden`}
         >
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="py-3 px-4 rounded-lg hover:bg-red-900/30 hover:text-red-200 transition-all duration-300 font-medium border-l-2 border-transparent hover:border-red-500"
             onClick={() => setMobileOpen(false)}
           >
             Home
           </Link>
-          
+
           <Link
             to="/designs"
             className="py-3 px-4 rounded-lg hover:bg-red-900/30 hover:text-red-200 transition-all duration-300 font-medium border-l-2 border-transparent hover:border-red-500"
