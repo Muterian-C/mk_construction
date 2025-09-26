@@ -1,40 +1,53 @@
 // src/context/AuthContext.js
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useCallback } from "react";
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token") || null);
-
-  useEffect(() => {
-    if (token) {
-      // (optional) decode token or fetch user profile from backend
-      setUser(JSON.parse(localStorage.getItem("user"))); 
+  const [user, setUser] = useState(() => {
+    try {
+      const storedUser = localStorage.getItem("user");
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch {
+      return null;
     }
-  }, [token]);
+  });
 
-  const login = (data) => {
+  const [token, setToken] = useState(() => localStorage.getItem("token") || null);
+
+  const login = useCallback((data) => {
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
     setToken(data.token);
     setUser(data.user);
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setToken(null);
     setUser(null);
+  }, []);
+
+  const value = {
+    user,
+    token,
+    isAuthenticated: !!token,
+    login,
+    logout
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 }
 
 export function useAuth() {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 }
