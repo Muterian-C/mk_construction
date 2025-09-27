@@ -22,9 +22,9 @@ export default function Navbar() {
           onClick={() => setMobileOpen(false)}
         >
           <div className="relative">
-            <div className="w-10 h-10 bg-gradient-to-r from-red-600 to-red-800 rounded-lg flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300">
+            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300">
               <img
-                src="/mk_construction_logo_no_contact.jpeg"   // note the leading slash
+                src="/LOGO_without_contacts.png"   // note the leading slash
                 alt="MK Construction"
                 className="w-10 h-10 object-cover rounded-lg"
               />
