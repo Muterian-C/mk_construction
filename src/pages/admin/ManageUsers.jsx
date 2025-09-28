@@ -194,22 +194,26 @@ const handleToggleStatus = async (user) => {
     alert(`Error updating user status: ${errorMessage}`);
   }
 };
-  const handleUpdateRole = async (user) => {
-    const newRole = prompt("Enter new role (admin/user):", user.role);
-    if (newRole && ["admin", "user"].includes(newRole.toLowerCase())) {
-      try {
-        await axios.put(`/api/users/${user.id}`, {
-          role: newRole.toLowerCase()
-        }, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        fetchUsers();
-      } catch (err) {
-        console.error("Error updating role:", err);
-        alert("Error updating role: " + (err.response?.data?.error || err.message));
-      }
+const handleUpdateRole = async (user) => {
+  const newRole = prompt("Enter 'admin' or 'user':", user.role);
+  if (newRole && (newRole.toLowerCase() === "admin" || newRole.toLowerCase() === "user")) {
+    try {
+      await axios.put(`/api/users/${user.id}`, {
+        role: newRole.toLowerCase(),
+        is_active: user.is_active
+      }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchUsers();
+      alert(`User role updated to ${newRole.toLowerCase()} successfully!`);
+    } catch (err) {
+      console.error("Error updating role:", err);
+      alert("Error updating role: " + (err.response?.data?.error || err.message));
     }
-  };
+  } else if (newRole) {
+    alert("Please enter either 'admin' or 'user'");
+  }
+};
 
   const handleViewDetails = (user) => {
     setSelectedUser(user);
@@ -554,7 +558,8 @@ const UserRow = ({ user, onToggleStatus, onUpdateRole, onDelete, onViewDetails, 
           : 'bg-blue-100 text-blue-800'
       }`}>
         {user.role === 'admin' ? <FaCrown /> : <FaUserCheck />}
-        {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+        {/* CHANGED THIS LINE: Show "Customer" instead of "User" */}
+        {user.role === 'admin' ? 'Admin' : 'Customer'}
       </span>
     </td>
     <td className="px-6 py-4">
