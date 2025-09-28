@@ -16,6 +16,7 @@ import ManageDesigns from "./pages/admin/ManageDesign";
 import EditDesign from "./pages/admin/EditDesign";
 import ManageUsers from "./pages/admin/ManageUsers";
 import Footer from "./pages/Footer";
+import Dashboard from "./pages/UsersDashboard";
 
 
 function App() {
@@ -42,7 +43,7 @@ function App() {
               path="/dashboard"
               element={
                 <ProtectedRoute>
-                  <Home /> {/* user dashboard for now */}
+                  <Dashboard /> {/* user dashboard for now */}
                 </ProtectedRoute>
               }
             />

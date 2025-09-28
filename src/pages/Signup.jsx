@@ -53,7 +53,7 @@ export default function Signup() {
 
       // Redirect to dashboard after a brief delay
       setTimeout(() => {
-        navigate("/dashboard");
+        navigate("/");
       }, 1500);
     } catch (err) {
       setIsError(true);
