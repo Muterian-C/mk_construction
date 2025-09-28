@@ -7,17 +7,16 @@ import Signup from "./pages/Signup";
 import ProtectedRoute from "./context/ProtectedRoute";
 import Gallery from "./pages/Gallery";
 import DesignDetails from "./pages/DesignDetails";
-import AdminDashboard from "./pages/admin/AdminDashboard"; // NEW
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import Navbar from "./pages/Navbar";
 import AddDesign from "./pages/admin/AddDesign";
 import CartPage from "./pages/CartPage";
-import { CartProvider } from "./context/CartContext";  // ✅ add this
+import { CartProvider } from "./context/CartContext";
 import ManageDesigns from "./pages/admin/ManageDesign";
 import EditDesign from "./pages/admin/EditDesign";
 import ManageUsers from "./pages/admin/ManageUsers";
 import Footer from "./pages/Footer";
 import Dashboard from "./pages/UsersDashboard";
-
 
 function App() {
   return (
@@ -32,11 +31,7 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/designs" element={<Gallery />} />
             <Route path="/designs/:id" element={<DesignDetails />} />
-            <Route path="/admin/add-design" element={<AddDesign />} />
             <Route path="/cart" element={<CartPage />} />
-            <Route path="/admin/designs" element={<ManageDesigns/>}/>
-            <Route path="/admin/users" element={<ManageUsers/>}/>
-            <Route path="/admin/edit-design/:id" element={<EditDesign />} />
 
             {/* User dashboard */}
             <Route
@@ -48,12 +43,48 @@ function App() {
               }
             />
 
-            {/* Admin dashboard */}
+            {/* Protected Admin routes */}
             <Route
               path="/admin/dashboard"
               element={
                 <ProtectedRoute role="admin">
                   <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            
+            <Route
+              path="/admin/add-design"
+              element={
+                <ProtectedRoute role="admin">
+                  <AddDesign />
+                </ProtectedRoute>
+              }
+            />
+            
+            <Route
+              path="/admin/designs"
+              element={
+                <ProtectedRoute role="admin">
+                  <ManageDesigns />
+                </ProtectedRoute>
+              }
+            />
+            
+            <Route
+              path="/admin/users"
+              element={
+                <ProtectedRoute role="admin">
+                  <ManageUsers />
+                </ProtectedRoute>
+              }
+            />
+            
+            <Route
+              path="/admin/edit-design/:id"
+              element={
+                <ProtectedRoute role="admin">
+                  <EditDesign />
                 </ProtectedRoute>
               }
             />
