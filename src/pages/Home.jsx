@@ -113,6 +113,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-red-50 to-gray-100">
       {/* Enhanced Hero Section */}
+      {/* Enhanced Hero Section with Wave */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-900 via-red-900 to-black text-white">
         {/* Animated Background */}
         <div className="absolute inset-0">
@@ -128,14 +129,14 @@ export default function Home() {
                 <span className="w-2 h-2 bg-red-400 rounded-full mr-2 animate-pulse"></span>
                 Premium Architectural Designs
               </div>
-              
+
               <h1 className="text-6xl md:text-8xl font-black mb-8 leading-tight">
                 Build Your
                 <span className="block bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent">
                   Dream Space
                 </span>
               </h1>
-              
+
               <p className="text-2xl md:text-3xl mb-12 max-w-4xl mx-auto leading-relaxed text-gray-300 font-light">
                 Discover <span className="text-red-400 font-semibold">watermarked previews</span>, unlock with secure payments, and transform your vision into reality with professional architectural designs.
               </p>
@@ -176,19 +177,20 @@ export default function Home() {
               </div>
             </div>
           ) : (
+            // {/* Logged-in user content */}
             <div className="animate-fade-in-up space-y-8">
               <div className="inline-flex items-center bg-red-600/20 backdrop-blur-sm border border-red-500/30 px-6 py-3 rounded-full text-red-200 mb-4">
                 <span className="w-2 h-2 bg-red-400 rounded-full mr-2 animate-pulse"></span>
                 Welcome Back, Architect!
               </div>
-              
+
               <h1 className="text-6xl md:text-8xl font-black mb-8 leading-tight">
                 Ready to
                 <span className="block bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent">
                   Create More?
                 </span>
               </h1>
-              
+
               <p className="text-2xl md:text-3xl mb-12 max-w-4xl mx-auto leading-relaxed text-gray-300 font-light">
                 Your next masterpiece awaits. Access your purchased designs or explore new additions to our collection.
               </p>
@@ -225,57 +227,132 @@ export default function Home() {
             <div className="w-1 h-3 bg-white/60 rounded-full mt-2"></div>
           </div>
         </div>
+
+        {/* Wave Divider - Integrated from first version */}
+        <div className="absolute bottom-0 left-0 w-full overflow-hidden">
+          <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="relative block w-full h-16 md:h-20">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"
+              fill="rgb(248 250 252)"></path>
+          </svg>
+        </div>
       </section>
 
       {/* Enhanced How It Works Section */}
-      <section className="py-24 relative overflow-hidden bg-white">
+      <section className="py-20 relative overflow-hidden bg-white">
         <div className="container mx-auto px-6">
-          <div className="text-center mb-20">
-            <div className="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font--medium mb-4">
               <span className="w-2 h-2 bg-blue-500 rounded-full mr-2 animate-pulse"></span>
-              Simple 5-Step Process
+              simple 5-step process
             </div>
-            <h2 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-gray-900 to-blue-800 bg-clip-text text-transparent">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-gray-900 to-red-800 bg-clip-text text-transparent">
               How It Works
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              From browsing watermarked previews to downloading your full design - a seamless journey to your dream space
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Simple, secure, and seamless process to access premium architectural designs
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 relative">
-            {/* Connecting line for desktop */}
-            <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 via-green-500 to-purple-500 transform -translate-y-1/2 z-0"></div>
-            
-            {workflowSteps.map((step, index) => (
-              <div key={step.step} className="relative z-10 group">
-                <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:border-gray-200 group-hover:-translate-y-2 h-full">
-                  {/* Step number with connecting dots */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-r ${step.color} flex items-center justify-center text-2xl font-bold text-white shadow-lg`}>
-                      {step.icon}
+          <div className="relative">
+            {/* Enhanced Connecting Line */}
+            <div className="absolute left-1/2 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-500 via-green-500 to-purple-500 transform -translate-x-1/2 hidden lg:block shadow-lg"></div>
+
+            {/* Animated Pulse Effect */}
+            <div className="absolute left-1/2 top-0 bottom-0 w-1.5 transform -translate-x-1/2 hidden lg:block">
+              <div className="w-full h-full bg-gradient-to-b from-blue-500/20 via-green-500/20 to-purple-500/20 animate-pulse rounded-full"></div>
+            </div>
+
+            <div className="space-y-16 lg:space-y-0">
+              {workflowSteps.map((step, index) => (
+                <div
+                  key={step.step}
+                  className={`relative flex flex-col lg:flex-row items-center ${index % 2 === 0 ? 'lg:flex-row-reverse' : ''
+                    } group`}
+                >
+                  {/* Step Content - Maintained original width but enhanced styling */}
+                  <div className={`lg:w-1/2 ${index % 2 === 0 ? 'lg:pr-12' : 'lg:pl-12'} mb-8 lg:mb-0`}>
+                    <div className="bg-gradient-to-br from-gray-50 to-white p-8 rounded-3xl shadow-xl border border-gray-200 hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group-hover:scale-105">
+                      {/* Background Glow Effect */}
+                      <div className={`absolute inset-0 rounded-3xl bg-gradient-to-r ${step.color} opacity-5 group-hover:opacity-10 transition-opacity duration-500`}></div>
+
+                      <div className="flex items-center mb-6">
+                        <div className={`w-14 h-14 rounded-2xl bg-gradient-to-r ${step.color} flex items-center justify-center text-2xl font-bold text-white mr-6 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                          {step.icon}
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-800 group-hover:text-gray-900 transition-colors">
+                          {step.title}
+                        </h3>
+                      </div>
+                      <p className="text-gray-600 text-lg leading-relaxed pl-20">
+                        {step.description}
+                      </p>
+
+                      {/* Decorative Corner */}
+                      <div className="absolute top-4 right-4 w-6 h-6 border-t-2 border-r-2 border-gray-200 rounded-tr-2xl"></div>
                     </div>
-                    <div className="text-3xl font-black text-gray-300 opacity-50">0{step.step}</div>
                   </div>
-                  
-                  <h3 className="text-2xl font-bold mb-4 text-gray-800 group-hover:text-gray-900 transition-colors">
-                    {step.title}
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed text-lg">
-                    {step.description}
-                  </p>
-                  
-                  {/* Progress indicator for mobile */}
-                  <div className="lg:hidden mt-6 flex items-center justify-center">
+
+                  {/* Enhanced Step Number */}
+                  <div className="relative z-10 flex-shrink-0">
+                    <div className={`w-20 h-20 rounded-full bg-gradient-to-r ${step.color} flex items-center justify-center text-2xl font-bold text-white shadow-2xl border-4 border-white group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 relative`}>
+                      {step.step}
+                      {/* Pulse Animation */}
+                      <div className={`absolute inset-0 rounded-full bg-gradient-to-r ${step.color} animate-ping opacity-20`}></div>
+                    </div>
+
+                    {/* Connecting Dots for Mobile */}
                     {index < workflowSteps.length - 1 && (
-                      <div className="w-full h-0.5 bg-gradient-to-r from-gray-200 to-gray-300 relative">
-                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-3 h-3 bg-gray-400 rounded-full"></div>
+                      <div className="lg:hidden flex justify-center mt-6">
+                        <div className="w-1 h-12 bg-gradient-to-b from-gray-200 to-gray-300 rounded-full relative">
+                          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-gray-400 rounded-full"></div>
+                        </div>
                       </div>
                     )}
                   </div>
+
+                  {/* Spacer for alternating sides */}
+                  <div className="lg:w-1/2 hidden lg:block"></div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+
+            {/* Start and End Decorations */}
+            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 hidden lg:block">
+              <div className="w-6 h-6 bg-blue-500 rounded-full shadow-lg border-4 border-white"></div>
+            </div>
+            <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 hidden lg:block">
+              <div className="w-6 h-6 bg-purple-500 rounded-full shadow-lg border-4 border-white"></div>
+            </div>
+          </div>
+
+          {/* Enhanced Bottom CTA */}
+          <div className="text-center mt-16">
+            <div className="inline-flex items-center bg-green-100 text-green-800 px-6 py-3 rounded-full text-sm font-semibold mb-6">
+              <span className="w-2 h-2 bg-green-500 rounded-full mr-3 animate-pulse"></span>
+              Ready to Get Started?
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                to="/designs"
+                className="inline-flex items-center bg-gradient-to-r from-red-600 to-red-800 text-white px-8 py-4 rounded-2xl font-semibold hover:from-red-500 hover:to-red-700 transform hover:scale-105 transition-all duration-300 shadow-lg"
+              >
+                Browse Designs
+                <svg className="w-5 h-5 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </Link>
+              {!user && (
+                <Link
+                  to="/signup"
+                  className="inline-flex items-center bg-white text-gray-800 px-8 py-4 rounded-2xl font-semibold hover:bg-gray-50 transform hover:scale-105 transition-all duration-300 shadow-lg border border-gray-200"
+                >
+                  Create Account
+                  <svg className="w-5 h-5 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                  </svg>
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -323,15 +400,15 @@ export default function Home() {
             {carouselItems.map((item) => (
               <SwiperSlide key={item.id}>
                 <div className="relative h-96 md:h-[600px] rounded-3xl overflow-hidden group">
-                  <img 
-                    src={item.image} 
+                  <img
+                    src={item.image}
                     alt={item.title}
                     className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                   />
-                  
+
                   {/* Enhanced overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
-                  
+
                   {/* Watermark pattern */}
                   <div className="absolute inset-0 opacity-10 bg-repeat" style={{
                     backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' font-size='16' text-anchor='middle' dominant-baseline='middle' fill='white' font-family='Arial' font-weight='bold'%3EMK CONSTRUCTION PREVIEW%3C/text%3E%3C/svg%3E")`
@@ -343,14 +420,14 @@ export default function Home() {
                         <span className="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></span>
                         Protected Preview - Watermarked
                       </div>
-                      
+
                       <h3 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
                         {item.title}
                       </h3>
                       <p className="text-xl md:text-2xl mb-8 opacity-90 max-w-2xl leading-relaxed">
                         {item.description}
                       </p>
-                      
+
                       <div className="flex flex-col sm:flex-row gap-4">
                         <Link
                           to={item.link}
@@ -373,7 +450,7 @@ export default function Home() {
                 </div>
               </SwiperSlide>
             ))}
-            
+
             {/* Custom navigation buttons */}
             <div className="swiper-button-next !text-white !w-16 !h-16 after:!text-2xl after:!font-bold"></div>
             <div className="swiper-button-prev !text-white !w-16 !h-16 after:!text-2xl after:!font-bold"></div>
@@ -403,14 +480,14 @@ export default function Home() {
                 <div className={`relative bg-white p-8 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border-2 border-transparent hover:border-gray-100 h-full overflow-hidden`}>
                   {/* Background gradient effect */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${method.color} opacity-5 group-hover:opacity-10 transition-opacity duration-500`}></div>
-                  
+
                   <div className="relative z-10 text-center">
                     <div className={`inline-flex items-center justify-center w-24 h-24 rounded-3xl bg-gradient-to-r ${method.color} mb-6 text-5xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-lg`}>
                       {method.icon}
                     </div>
                     <h3 className="text-3xl font-bold mb-4 text-gray-800">{method.name}</h3>
                     <p className="text-gray-600 text-lg mb-6 leading-relaxed">{method.description}</p>
-                    
+
                     <div className="space-y-3">
                       <div className="flex items-center justify-center text-green-600 font-medium">
                         <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -524,19 +601,19 @@ export default function Home() {
             <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
             Start Your Project Today
           </div>
-          
+
           <h2 className="text-5xl md:text-7xl font-black mb-8 leading-tight">
             Ready to Unlock Your
             <span className="block bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent">
               Dream Design?
             </span>
           </h2>
-          
+
           <p className="text-2xl mb-12 max-w-3xl mx-auto leading-relaxed text-red-100">
-            Browse our collection, choose your favorite design, and unlock it with secure payment. 
+            Browse our collection, choose your favorite design, and unlock it with secure payment.
             Start building your vision today!
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <Link
               to="/designs"
@@ -561,7 +638,7 @@ export default function Home() {
               </Link>
             )}
           </div>
-          
+
           <div className="mt-12 flex flex-wrap justify-center gap-8 text-red-200 text-lg">
             <div className="flex items-center">
               <svg className="w-6 h-6 mr-3 text-green-400" fill="currentColor" viewBox="0 0 20 20">
