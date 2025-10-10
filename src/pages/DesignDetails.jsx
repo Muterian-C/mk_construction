@@ -196,20 +196,16 @@ export default function DesignDetails() {
                     </div>
                   )}
 
-                  {/* Watermark Overlay */}
-                  <div className={`absolute inset-0 flex items-center justify-center ${mediaItems[selectedPreviewIndex].type === 'image'
-                      ? 'bg-gradient-to-br from-black/30 to-black/50 pointer-events-none'
-                      : 'bg-gradient-to-br from-black/10 to-black/20 pointer-events-none'
-                    }`}>
-                    <div className={`text-center text-white p-8 ${mediaItems[selectedPreviewIndex].type === 'image'
-                        ? 'opacity-100'
-                        : 'opacity-40'
-                      }`}>
-                      <FaLock className="text-6xl mx-auto mb-4" />
-                      <h3 className="text-2xl font-bold mb-2">Watermarked Preview</h3>
-                      <p className="opacity-90">Purchase to unlock full-resolution files</p>
+                  {/* Watermark Overlay - Only for images */}
+                  {mediaItems[selectedPreviewIndex].type === 'image' && (
+                    <div className="absolute inset-0 bg-gradient-to-br from-black/30 to-black/50 flex items-center justify-center pointer-events-none">
+                      <div className="text-center text-white p-8">
+                        <FaLock className="text-6xl mx-auto mb-4 opacity-80" />
+                        <h3 className="text-2xl font-bold mb-2">Watermarked Preview</h3>
+                        <p className="opacity-90">Purchase to unlock full-resolution files</p>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </>
               ) : (
                 <div className="w-full h-96 bg-gray-200 flex items-center justify-center">
