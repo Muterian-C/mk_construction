@@ -8,6 +8,7 @@ import {
   FaFileArchive,
   FaFileCode,
   FaFile,
+  FaVideo,
   FaCheckCircle,
   FaExclamationTriangle,
   FaTimes
@@ -22,6 +23,14 @@ const SUPPORTED_FORMATS = {
     icon: FaFileImage,
     color: "text-green-500",
     accept: "image/*"
+  },
+  videos: {
+    name: "Video Files",
+    extensions: [".mp4", ".mov", ".avi", ".webm", ".mkv"],
+    maxSize: 50 * 1024 * 1024, // 50MB
+    icon: FaVideo,
+    color: "text-purple-500",
+    accept: "video/*"
   },
   documents: {
     name: "Document Files",
@@ -65,10 +74,6 @@ const SUPPORTED_FORMATS = {
   }
 };
 
-const ALL_ACCEPTED_FILES = Object.values(SUPPORTED_FORMATS)
-  .map(format => format.accept)
-  .join(',');
-
 const AddDesign = () => {
   const [formData, setFormData] = useState({
     title: "",
@@ -76,10 +81,11 @@ const AddDesign = () => {
     description: "",
     price: "",
     is_featured: false,
-    file_type: "PDF/CAD" // Default file type
+    file_type: "PDF/CAD"
   });
-  const [previewFile, setPreviewFile] = useState(null);
-  const [fullFile, setFullFile] = useState(null);
+  const [previewFiles, setPreviewFiles] = useState([]);
+  const [fullFiles, setFullFiles] = useState([]);
+  const [videoFile, setVideoFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -95,17 +101,17 @@ const AddDesign = () => {
         return { type, ...info };
       }
     }
-    return null; // Unsupported format
+    return null;
   };
 
   // Validate file
-  const validateFile = (file, isPreview = false) => {
+  const validateFile = (file, fileType = 'any') => {
     const fileInfo = getFileInfo(file);
     
     if (!fileInfo) {
       return {
         valid: false,
-        message: `Unsupported file format: ${file.name}. Supported formats: ${Object.values(SUPPORTED_FORMATS).map(f => f.name).join(', ')}`
+        message: `Unsupported file format: ${file.name}`
       };
     }
 
@@ -117,53 +123,95 @@ const AddDesign = () => {
       };
     }
 
-    // Additional validation for preview files (should be images)
-    if (isPreview && !fileInfo.extensions.some(ext => ['.jpg', '.jpeg', '.png', '.webp', '.gif'].includes(ext))) {
+    // Specific validation for file types
+    if (fileType === 'preview' && fileInfo.type !== 'images') {
       return {
         valid: false,
-        message: "Preview file must be an image (JPG, PNG, WebP, GIF)"
+        message: "Preview files must be images (JPG, PNG, WebP, GIF)"
+      };
+    }
+
+    if (fileType === 'video' && fileInfo.type !== 'videos') {
+      return {
+        valid: false,
+        message: "Video files must be MP4, MOV, AVI, WebM, or MKV"
       };
     }
 
     return { valid: true, fileInfo };
   };
 
-  const handlePreviewFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const handlePreviewFilesChange = (e) => {
+    const files = Array.from(e.target.files);
+    const validFiles = [];
+    const newErrors = [];
 
-    const validation = validateFile(file, true);
-    if (!validation.valid) {
-      setErrors(prev => ({ ...prev, previewFile: validation.message }));
-      setPreviewFile(null);
-      return;
+    files.forEach((file, index) => {
+      const validation = validateFile(file, 'preview');
+      if (validation.valid) {
+        validFiles.push(file);
+      } else {
+        newErrors.push(validation.message);
+      }
+    });
+
+    if (newErrors.length > 0) {
+      setErrors(prev => ({ ...prev, previewFiles: newErrors[0] }));
+    } else {
+      setErrors(prev => ({ ...prev, previewFiles: null }));
     }
 
-    setErrors(prev => ({ ...prev, previewFile: null }));
-    setPreviewFile(file);
+    setPreviewFiles(prev => [...prev, ...validFiles]);
   };
 
-  const handleFullFileChange = (e) => {
+  const handleFullFilesChange = (e) => {
+    const files = Array.from(e.target.files);
+    const validFiles = [];
+    const newErrors = [];
+
+    files.forEach((file, index) => {
+      const validation = validateFile(file);
+      if (validation.valid) {
+        validFiles.push(file);
+      } else {
+        newErrors.push(validation.message);
+      }
+    });
+
+    if (newErrors.length > 0) {
+      setErrors(prev => ({ ...prev, fullFiles: newErrors[0] }));
+    } else {
+      setErrors(prev => ({ ...prev, fullFiles: null }));
+    }
+
+    setFullFiles(prev => [...prev, ...validFiles]);
+  };
+
+  const handleVideoFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const validation = validateFile(file);
+    const validation = validateFile(file, 'video');
     if (!validation.valid) {
-      setErrors(prev => ({ ...prev, fullFile: validation.message }));
-      setFullFile(null);
+      setErrors(prev => ({ ...prev, videoFile: validation.message }));
+      setVideoFile(null);
       return;
     }
 
-    setErrors(prev => ({ ...prev, fullFile: null }));
-    setFullFile(file);
-    
-    // Auto-set file type based on uploaded file
-    if (validation.fileInfo) {
-      setFormData(prev => ({
-        ...prev,
-        file_type: validation.fileInfo.name
-      }));
-    }
+    setErrors(prev => ({ ...prev, videoFile: null }));
+    setVideoFile(file);
+  };
+
+  const removePreviewFile = (index) => {
+    setPreviewFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeFullFile = (index) => {
+    setFullFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeVideoFile = () => {
+    setVideoFile(null);
   };
 
   const handleInputChange = (e) => {
@@ -173,7 +221,6 @@ const AddDesign = () => {
       [name]: type === 'checkbox' ? checked : value
     }));
     
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: null }));
     }
@@ -187,8 +234,8 @@ const AddDesign = () => {
     if (!formData.title.trim()) newErrors.title = "Title is required";
     if (!formData.category.trim()) newErrors.category = "Category is required";
     if (!formData.price || formData.price <= 0) newErrors.price = "Valid price is required";
-    if (!previewFile) newErrors.previewFile = "Preview file is required";
-    if (!fullFile) newErrors.fullFile = "Design file is required";
+    if (previewFiles.length === 0) newErrors.previewFiles = "At least one preview image is required";
+    if (fullFiles.length === 0) newErrors.fullFiles = "At least one design file is required";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -196,15 +243,28 @@ const AddDesign = () => {
     }
 
     const submitData = new FormData();
-    submitData.append("user_id", 1); // Replace with logged-in user ID from auth context
+    submitData.append("user_id", 1); // Replace with actual user ID
     submitData.append("title", formData.title.trim());
     submitData.append("category", formData.category.trim());
     submitData.append("description", formData.description.trim());
     submitData.append("price", formData.price);
     submitData.append("file_type", formData.file_type);
     submitData.append("is_featured", formData.is_featured ? 1 : 0);
-    submitData.append("preview_file", previewFile);
-    submitData.append("full_file", fullFile);
+
+    // Append multiple preview files
+    previewFiles.forEach(file => {
+      submitData.append("preview_files[]", file);
+    });
+
+    // Append multiple design files
+    fullFiles.forEach(file => {
+      submitData.append("full_files[]", file);
+    });
+
+    // Append video file if exists
+    if (videoFile) {
+      submitData.append("video_file", videoFile);
+    }
 
     try {
       setLoading(true);
@@ -239,17 +299,17 @@ const AddDesign = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const FilePreview = ({ file, onRemove, error }) => {
+  const FilePreview = ({ file, onRemove, error, index }) => {
     const fileInfo = file ? getFileInfo(file) : null;
     
     return (
-      <div className={`border rounded-lg p-4 ${error ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-gray-50'}`}>
+      <div className={`border rounded-lg p-3 ${error ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-gray-50'}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             {fileInfo ? (
-              <fileInfo.icon className={`text-xl ${fileInfo.color}`} />
+              <fileInfo.icon className={`text-lg ${fileInfo.color}`} />
             ) : (
-              <FaFile className="text-xl text-gray-500" />
+              <FaFile className="text-lg text-gray-500" />
             )}
             <div>
               <p className="font-medium text-sm">{file?.name}</p>
@@ -262,7 +322,7 @@ const AddDesign = () => {
           {file && (
             <button
               type="button"
-              onClick={onRemove}
+              onClick={() => onRemove(index)}
               className="text-red-500 hover:text-red-700"
             >
               <FaTimes />
@@ -279,6 +339,20 @@ const AddDesign = () => {
     );
   };
 
+  const MultiFilePreview = ({ files, onRemove, error, title }) => (
+    <div className="space-y-2">
+      {files.map((file, index) => (
+        <FilePreview
+          key={index}
+          file={file}
+          onRemove={onRemove}
+          error={index === 0 ? error : null} // Show error only on first item
+          index={index}
+        />
+      ))}
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-8">
       <div className="container mx-auto px-6 max-w-2xl">
@@ -289,7 +363,7 @@ const AddDesign = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Basic Information */}
+            {/* Basic Information - Same as before */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block font-semibold text-gray-700 mb-2">
@@ -305,9 +379,7 @@ const AddDesign = () => {
                   }`}
                   placeholder="Enter design title"
                 />
-                {errors.title && (
-                  <p className="text-red-600 text-sm mt-1">{errors.title}</p>
-                )}
+                {errors.title && <p className="text-red-600 text-sm mt-1">{errors.title}</p>}
               </div>
 
               <div>
@@ -330,9 +402,7 @@ const AddDesign = () => {
                   <option value="Landscape">Landscape</option>
                   <option value="Interior">Interior Design</option>
                 </select>
-                {errors.category && (
-                  <p className="text-red-600 text-sm mt-1">{errors.category}</p>
-                )}
+                {errors.category && <p className="text-red-600 text-sm mt-1">{errors.category}</p>}
               </div>
             </div>
 
@@ -367,9 +437,7 @@ const AddDesign = () => {
                   min="0"
                   step="100"
                 />
-                {errors.price && (
-                  <p className="text-red-600 text-sm mt-1">{errors.price}</p>
-                )}
+                {errors.price && <p className="text-red-600 text-sm mt-1">{errors.price}</p>}
               </div>
 
               <div>
@@ -387,50 +455,84 @@ const AddDesign = () => {
               </div>
             </div>
 
-            {/* File Uploads */}
-            <div className="space-y-4">
+            {/* File Uploads - UPDATED FOR MULTIPLE FILES */}
+            <div className="space-y-6">
+              {/* Multiple Preview Images */}
               <div>
                 <label className="block font-semibold text-gray-700 mb-2">
-                  Preview Image *
+                  Preview Images * ({previewFiles.length} selected)
                 </label>
                 <p className="text-sm text-gray-600 mb-3">
-                  Upload a high-quality preview image (JPG, PNG, WebP, GIF - max 10MB)
+                  Upload multiple high-quality preview images (JPG, PNG, WebP, GIF - max 10MB each)
                 </p>
                 <input
                   type="file"
-                  onChange={handlePreviewFileChange}
+                  onChange={handlePreviewFilesChange}
                   accept="image/*"
+                  multiple
                   className="w-full border border-gray-300 rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <FilePreview 
-                  file={previewFile} 
-                  error={errors.previewFile}
-                  onRemove={() => setPreviewFile(null)}
-                />
+                <div className="mt-3">
+                  <MultiFilePreview 
+                    files={previewFiles}
+                    onRemove={removePreviewFile}
+                    error={errors.previewFiles}
+                    title="Preview Images"
+                  />
+                </div>
               </div>
 
+              {/* Video Render (Optional) */}
               <div>
                 <label className="block font-semibold text-gray-700 mb-2">
-                  Design Files *
+                  Video Render (Optional)
                 </label>
                 <p className="text-sm text-gray-600 mb-3">
-                  Upload your design files (CAD, PDF, Archives, etc. - max 100MB)
+                  Upload a video render (MP4, MOV, AVI - max 50MB)
                 </p>
                 <input
                   type="file"
-                  onChange={handleFullFileChange}
-                  accept={ALL_ACCEPTED_FILES}
+                  onChange={handleVideoFileChange}
+                  accept="video/*"
                   className="w-full border border-gray-300 rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                <FilePreview 
-                  file={fullFile} 
-                  error={errors.fullFile}
-                  onRemove={() => setFullFile(null)}
+                {videoFile && (
+                  <div className="mt-3">
+                    <FilePreview 
+                      file={videoFile}
+                      onRemove={removeVideoFile}
+                      error={errors.videoFile}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Multiple Design Files */}
+              <div>
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Design Files * ({fullFiles.length} selected)
+                </label>
+                <p className="text-sm text-gray-600 mb-3">
+                  Upload multiple design files (CAD, PDF, Archives, etc. - max 100MB each)
+                </p>
+                <input
+                  type="file"
+                  onChange={handleFullFilesChange}
+                  multiple
+                  className="w-full border border-gray-300 rounded-2xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
+                <div className="mt-3">
+                  <MultiFilePreview 
+                    files={fullFiles}
+                    onRemove={removeFullFile}
+                    error={errors.fullFiles}
+                    title="Design Files"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Supported Formats Info */}
+            {/* Rest of the component remains the same */}
             <div className="bg-blue-50 rounded-2xl p-4 border border-blue-200">
               <h4 className="font-semibold text-blue-800 mb-2">Supported File Formats:</h4>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
@@ -454,7 +556,6 @@ const AddDesign = () => {
               <label className="font-medium text-gray-700">Mark as Featured Design</label>
             </div>
 
-            {/* Upload Progress */}
             {loading && uploadProgress > 0 && (
               <div className="bg-gray-100 rounded-2xl p-4">
                 <div className="flex justify-between text-sm text-gray-600 mb-2">
