@@ -172,37 +172,52 @@ export default function DesignDetails() {
                 <>
                   {/* Image or Video Display */}
                   {mediaItems[selectedPreviewIndex].type === 'image' ? (
-                    <img
-                      src={mediaItems[selectedPreviewIndex].url}
-                      alt={`${design.title} - View ${selectedPreviewIndex + 1}`}
-                      className={`w-full h-96 object-cover ${imageLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
-                      onLoad={() => setImageLoading(false)}
-                      onError={(e) => {
-                        e.target.src = "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800";
-                        setImageLoading(false);
-                      }}
-                    />
+                    <div className="relative">
+                      <img
+                        src={mediaItems[selectedPreviewIndex].url}
+                        alt={`${design.title} - View ${selectedPreviewIndex + 1}`}
+                        className={`w-full h-96 object-cover ${imageLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
+                        onLoad={() => setImageLoading(false)}
+                        onError={(e) => {
+                          e.target.src = "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800";
+                          setImageLoading(false);
+                        }}
+                      />
+                      {/* Watermark Overlay - Only for images */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-black/30 to-black/50 flex items-center justify-center pointer-events-none">
+                        <div className="text-center text-white p-8">
+                          <FaLock className="text-6xl mx-auto mb-4 opacity-80" />
+                          <h3 className="text-2xl font-bold mb-2">Watermarked Preview</h3>
+                          <p className="opacity-90">Purchase to unlock full-resolution files</p>
+                        </div>
+                      </div>
+                    </div>
                   ) : (
                     <div className="relative w-full h-96 bg-black">
                       <video
                         src={mediaItems[selectedPreviewIndex].url}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                         controls
+                        controlsList="nodownload"
                         poster={design.preview_urls?.[0] || design.preview_url}
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <FaPlay className="text-white text-6xl opacity-80" />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Watermark Overlay - Only for images */}
-                  {mediaItems[selectedPreviewIndex].type === 'image' && (
-                    <div className="absolute inset-0 bg-gradient-to-br from-black/30 to-black/50 flex items-center justify-center pointer-events-none">
-                      <div className="text-center text-white p-8">
-                        <FaLock className="text-6xl mx-auto mb-4 opacity-80" />
-                        <h3 className="text-2xl font-bold mb-2">Watermarked Preview</h3>
-                        <p className="opacity-90">Purchase to unlock full-resolution files</p>
+                        onLoadedData={() => setImageLoading(false)}
+                        onError={(e) => {
+                          console.error("Video failed to load:", mediaItems[selectedPreviewIndex].url);
+                          setImageLoading(false);
+                        }}
+                      >
+                        <source src={mediaItems[selectedPreviewIndex].url} type="video/mp4" />
+                        Your browser does not support the video tag.
+                      </video>
+                      
+                      {/* Play button overlay that disappears on hover */}
+                      <div 
+                        className="absolute inset-0 flex items-center justify-center transition-opacity duration-300 hover:opacity-0"
+                        style={{ pointerEvents: 'none' }}
+                      >
+                        <div className="bg-black/40 rounded-full p-6">
+                          <FaPlay className="text-white text-4xl" />
+                        </div>
                       </div>
                     </div>
                   )}
