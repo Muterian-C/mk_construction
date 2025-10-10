@@ -270,7 +270,7 @@ const AddDesign = () => {
       setLoading(true);
       setUploadProgress(0);
 
-      await api.post("/api/designs", submitData, {
+      await api.post("/api/add_designs", submitData, {
         headers: { "Content-Type": "multipart/form-data" },
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round(
