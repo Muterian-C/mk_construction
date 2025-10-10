@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import api from "../../api/axios";
 import {
   FaUpload,
@@ -91,6 +92,7 @@ const AddDesign = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
 
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
 
   // Get file type information
   const getFileInfo = (file) => {
@@ -229,6 +231,13 @@ const AddDesign = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Check authentication
+    if (!isAuthenticated || !user) {
+      alert("❌ Please log in to add designs");
+      navigate("/login");
+      return;
+    }
+
     // Validation
     const newErrors = {};
     if (!formData.title.trim()) newErrors.title = "Title is required";
@@ -243,7 +252,7 @@ const AddDesign = () => {
     }
 
     const submitData = new FormData();
-    submitData.append("user_id", 1); // Replace with actual user ID
+    submitData.append("user_id", user.id); // Use actual user ID from context
     submitData.append("title", formData.title.trim());
     submitData.append("category", formData.category.trim());
     submitData.append("description", formData.description.trim());
@@ -284,7 +293,16 @@ const AddDesign = () => {
       navigate("/admin/designs");
     } catch (err) {
       console.error("Upload error:", err);
-      alert("❌ Failed to add design. Please try again.");
+      
+      // Enhanced error handling
+      if (err.response?.data?.error === "User does not exist") {
+        alert("❌ Authentication error. Please log in again.");
+        navigate("/login");
+      } else if (err.response?.data?.error) {
+        alert(`❌ ${err.response.data.error}`);
+      } else {
+        alert("❌ Failed to add design. Please try again.");
+      }
     } finally {
       setLoading(false);
       setUploadProgress(0);
@@ -360,10 +378,15 @@ const AddDesign = () => {
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900">Add New Design</h2>
             <p className="text-gray-600 mt-2">Upload your architectural designs and files</p>
+            {user && (
+              <p className="text-sm text-green-600 mt-1">
+                Logged in as: {user.username || user.email}
+              </p>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Basic Information - Same as before */}
+            {/* Basic Information */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block font-semibold text-gray-700 mb-2">
@@ -455,7 +478,7 @@ const AddDesign = () => {
               </div>
             </div>
 
-            {/* File Uploads - UPDATED FOR MULTIPLE FILES */}
+            {/* File Uploads */}
             <div className="space-y-6">
               {/* Multiple Preview Images */}
               <div>
@@ -532,7 +555,7 @@ const AddDesign = () => {
               </div>
             </div>
 
-            {/* Rest of the component remains the same */}
+            {/* Supported Formats */}
             <div className="bg-blue-50 rounded-2xl p-4 border border-blue-200">
               <h4 className="font-semibold text-blue-800 mb-2">Supported File Formats:</h4>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm">
@@ -573,7 +596,7 @@ const AddDesign = () => {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !isAuthenticated}
               className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 px-8 rounded-2xl font-semibold text-lg hover:from-blue-500 hover:to-indigo-500 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3"
             >
               {loading ? (
