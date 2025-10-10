@@ -16,7 +16,10 @@ import {
   FaCheckCircle,
   FaMobile,
   FaPaypal,
-  FaCreditCard
+  FaCreditCard,
+  FaPlay,
+  FaImages,
+  FaVideo
 } from "react-icons/fa";
 
 export default function DesignDetails() {
@@ -25,21 +28,18 @@ export default function DesignDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [imageLoading, setImageLoading] = useState(true);
+  const [selectedPreviewIndex, setSelectedPreviewIndex] = useState(0);
   const { addToCart } = useCart();
   const { user } = useAuth();
 
   useEffect(() => {
     const fetchDesign = async () => {
       try {
-        // This matches your Flask route: /designs/<int:design_id>
         const response = await api.get(`/api/designs/${id}`);
         setDesign(response.data);
       } catch (err) {
         console.error("Error fetching design details:", err);
         setError("Failed to load design details.");
-        
-        // Use mock data as fallback
-        setDesign(getMockDesign(id));
       } finally {
         setLoading(false);
       }
@@ -48,85 +48,10 @@ export default function DesignDetails() {
     fetchDesign();
   }, [id]);
 
-  // Mock design data for development/fallback
-  const getMockDesign = (id) => {
-    const mockDesigns = {
-      1: {
-        id: 1,
-        title: "Modern Family Home",
-        description: "This contemporary 4-bedroom family residence features an open plan living area, modern kitchen, and spacious outdoor entertainment area. Perfect for modern family living with sustainable design elements.",
-        preview_url: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800",
-        full_file_url: "/static/designs/full_design_1.pdf",
-        price: 25000,
-        category: "Residential",
-        is_featured: true,
-        viewCount: 150,
-        downloads: 45,
-        rating: 4.8,
-        fileType: "PDF/CAD",
-        features: [
-          "4 Bedrooms, 3 Bathrooms",
-          "Open Plan Living Area",
-          "Modern Kitchen",
-          "Outdoor Entertainment",
-          "Sustainable Design",
-          "CAD Files Included"
-        ]
-      },
-      2: {
-        id: 2,
-        title: "Commercial Office Building",
-        description: "3-story office complex designed for modern businesses. Features flexible office spaces, meeting rooms, and common areas with contemporary architectural elements.",
-        preview_url: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800",
-        full_file_url: "/static/designs/full_design_2.pdf",
-        price: 45000,
-        category: "Commercial",
-        is_featured: false,
-        viewCount: 89,
-        downloads: 23,
-        rating: 4.5,
-        fileType: "PDF/CAD",
-        features: [
-          "3 Stories",
-          "Flexible Office Spaces",
-          "Meeting Rooms",
-          "Modern Facilities",
-          "Energy Efficient",
-          "Full Documentation"
-        ]
-      },
-      3: {
-        id: 3,
-        title: "Luxury Apartment Complex",
-        description: "High-end apartment building featuring luxury finishes, premium amenities, and sophisticated design. Ideal for upscale residential developments.",
-        preview_url: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800",
-        full_file_url: "/static/designs/full_design_3.pdf",
-        price: 35000,
-        category: "Apartments",
-        is_featured: true,
-        viewCount: 210,
-        downloads: 67,
-        rating: 4.9,
-        fileType: "PDF/CAD",
-        features: [
-          "Luxury Finishes",
-          "Premium Amenities",
-          "Modern Design",
-          "Spacious Layouts",
-          "High-Quality Materials",
-          "Complete Specifications"
-        ]
-      }
-    };
-    
-    return mockDesigns[id] || null;
-  };
-
   const handleAddToCart = async () => {
     if (design) {
       try {
         await addToCart(design.id);
-        // Show success notification
         alert(`${design.title} added to cart!`);
       } catch (error) {
         alert("Failed to add to cart. Please try again.");
@@ -138,13 +63,52 @@ export default function DesignDetails() {
     if (design) {
       try {
         await addToCart(design.id);
-        // Redirect to checkout
         window.location.href = '/checkout';
       } catch (error) {
         alert("Failed to add to cart. Please try again.");
       }
     }
   };
+
+  // Get all media items (images + video)
+  const getMediaItems = () => {
+    const items = [];
+
+    // Add preview images
+    if (design.preview_urls && design.preview_urls.length > 0) {
+      design.preview_urls.forEach((url, index) => {
+        items.push({
+          type: 'image',
+          url: url,
+          index: index,
+          icon: FaImages
+        });
+      });
+    } else {
+      // Fallback to single preview_url
+      items.push({
+        type: 'image',
+        url: design.preview_url,
+        index: 0,
+        icon: FaImages
+      });
+    }
+
+    // Add video if exists
+    if (design.video_url) {
+      items.push({
+        type: 'video',
+        url: design.video_url,
+        index: items.length,
+        icon: FaVideo
+      });
+    }
+
+    return items;
+  };
+
+  const mediaItems = design ? getMediaItems() : [];
+  const hasMultipleMedia = mediaItems.length > 1;
 
   const paymentMethods = [
     { id: "mpesa", name: "M-Pesa", icon: FaMobile, color: "from-green-500 to-emerald-600" },
@@ -183,8 +147,8 @@ export default function DesignDetails() {
       {/* Navigation */}
       <nav className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-10">
         <div className="container mx-auto px-6 py-4">
-          <Link 
-            to="/designs" 
+          <Link
+            to="/designs"
             className="inline-flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors font-semibold"
           >
             <FaArrowLeft /> Back to Gallery
@@ -196,32 +160,56 @@ export default function DesignDetails() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-7xl mx-auto">
           {/* Design Preview Section */}
           <div className="space-y-6">
-            {/* Main Image */}
+            {/* Main Media Display */}
             <div className="relative bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200">
               {imageLoading && (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                 </div>
               )}
-              <img
-                src={design.preview_url}
-                alt={design.title}
-                className={`w-full h-96 object-cover ${imageLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
-                onLoad={() => setImageLoading(false)}
-                onError={(e) => {
-                  e.target.src = "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800";
-                  setImageLoading(false);
-                }}
-              />
-              
-              {/* Watermark Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-black/30 to-black/50 flex items-center justify-center">
-                <div className="text-center text-white p-8">
-                  <FaLock className="text-6xl mx-auto mb-4 opacity-80" />
-                  <h3 className="text-2xl font-bold mb-2">Watermarked Preview</h3>
-                  <p className="opacity-90">Purchase to unlock full-resolution files</p>
+
+              {mediaItems.length > 0 ? (
+                <>
+                  {/* Image or Video Display */}
+                  {mediaItems[selectedPreviewIndex].type === 'image' ? (
+                    <img
+                      src={mediaItems[selectedPreviewIndex].url}
+                      alt={`${design.title} - View ${selectedPreviewIndex + 1}`}
+                      className={`w-full h-96 object-cover ${imageLoading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}
+                      onLoad={() => setImageLoading(false)}
+                      onError={(e) => {
+                        e.target.src = "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=800";
+                        setImageLoading(false);
+                      }}
+                    />
+                  ) : (
+                    <div className="relative w-full h-96 bg-black">
+                      <video
+                        src={mediaItems[selectedPreviewIndex].url}
+                        className="w-full h-full object-cover"
+                        controls
+                        poster={design.preview_urls?.[0] || design.preview_url}
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <FaPlay className="text-white text-6xl opacity-80" />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Watermark Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-black/30 to-black/50 flex items-center justify-center">
+                    <div className="text-center text-white p-8">
+                      <FaLock className="text-6xl mx-auto mb-4 opacity-80" />
+                      <h3 className="text-2xl font-bold mb-2">Watermarked Preview</h3>
+                      <p className="opacity-90">Purchase to unlock full-resolution files</p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="w-full h-96 bg-gray-200 flex items-center justify-center">
+                  <p className="text-gray-500">No preview available</p>
                 </div>
-              </div>
+              )}
 
               {/* Design Badges */}
               <div className="absolute top-6 left-6 flex gap-2">
@@ -234,23 +222,73 @@ export default function DesignDetails() {
                   {design.category}
                 </span>
               </div>
+
+              {/* Media Type Indicator */}
+              {mediaItems[selectedPreviewIndex] && (
+                <div className="absolute top-6 right-6 bg-black/70 text-white px-3 py-2 rounded-2xl font-semibold backdrop-blur-sm flex items-center gap-2">
+                  {mediaItems[selectedPreviewIndex] && (
+                    <>
+                      {mediaItems[selectedPreviewIndex].type === 'image' ? (
+                        <FaImages className="text-white" />
+                      ) : (
+                        <FaVideo className="text-white" />
+                      )}
+                      <span className="text-sm">
+                        {mediaItems[selectedPreviewIndex].type === 'image' ? 'Image' : 'Video'}
+                        {mediaItems.length > 1 && ` ${selectedPreviewIndex + 1}/${mediaItems.length}`}
+                      </span>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
 
-            {/* Additional Images */}
-            <div className="grid grid-cols-3 gap-4">
-              {[1, 2, 3].map((index) => (
-                <div key={index} className="relative bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 aspect-video">
-                  <img
-                    src={design.preview_url}
-                    alt={`${design.title} view ${index}`}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                    <FaLock className="text-white text-lg" />
+            {/* Thumbnail Gallery */}
+            {hasMultipleMedia && (
+              <div className="grid grid-cols-3 gap-4">
+                {mediaItems.map((media, index) => (
+                  <div
+                    key={index}
+                    onClick={() => setSelectedPreviewIndex(index)}
+                    className={`relative bg-white rounded-2xl shadow-lg overflow-hidden border-2 cursor-pointer transition-all duration-300 aspect-video ${selectedPreviewIndex === index
+                        ? 'border-blue-500 ring-2 ring-blue-200'
+                        : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                  >
+                    {media.type === 'image' ? (
+                      <img
+                        src={media.url}
+                        alt={`${design.title} thumbnail ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="relative w-full h-full bg-black">
+                        <img
+                          src={design.preview_urls?.[0] || design.preview_url}
+                          alt="Video thumbnail"
+                          className="w-full h-full object-cover opacity-60"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <FaVideo className="text-white text-xl" />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Media Type Badge */}
+                    <div className="absolute bottom-2 right-2 bg-black/70 text-white px-2 py-1 rounded-lg text-xs backdrop-blur-sm">
+                      {media.type === 'image' ? 'IMG' : 'VID'}
+                    </div>
+
+                    {/* Selection Indicator */}
+                    {selectedPreviewIndex === index && (
+                      <div className="absolute top-2 left-2 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+                        ✓
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Design Info & Purchase Section */}
@@ -271,7 +309,7 @@ export default function DesignDetails() {
               <h1 className="text-4xl font-extrabold text-gray-900 mb-4 leading-tight">
                 {design.title}
               </h1>
-              
+
               <p className="text-gray-600 text-lg leading-relaxed mb-6">
                 {design.description}
               </p>
@@ -292,6 +330,27 @@ export default function DesignDetails() {
                   <FaStar className="text-yellow-500 text-xl mx-auto mb-2" />
                   <div className="font-bold text-gray-900">{design.rating || "4.8"}</div>
                   <div className="text-sm text-gray-600">Rating</div>
+                </div>
+              </div>
+
+              {/* Media Info */}
+              <div className="bg-blue-50 rounded-2xl p-4 mb-6">
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <FaImages className="text-blue-600" />
+                      <span>{design.preview_urls?.length || 1} Preview Images</span>
+                    </div>
+                    {design.video_url && (
+                      <div className="flex items-center gap-2">
+                        <FaVideo className="text-green-600" />
+                        <span>Video Render Included</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-blue-700 font-semibold">
+                    {design.design_files?.length || 1} Design Files
+                  </div>
                 </div>
               </div>
 
@@ -367,18 +426,49 @@ export default function DesignDetails() {
             {/* File Details */}
             <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-200">
               <h3 className="text-2xl font-bold text-gray-900 mb-4">File Details</h3>
+
+              {/* Included Files */}
+              {design.design_files && design.design_files.length > 0 && (
+                <div className="mb-6">
+                  <h4 className="font-semibold text-gray-700 mb-3">Included Files:</h4>
+                  <div className="space-y-2">
+                    {design.design_files.map((file, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                        <div className="flex items-center gap-3">
+                          <div className="text-gray-600">
+                            {file.file_type === 'cad' && '📐'}
+                            {file.file_type === 'document' && '📄'}
+                            {file.file_type === 'archive' && '📦'}
+                            {file.file_type === 'image' && '🖼️'}
+                            {file.file_type === 'video' && '🎥'}
+                            {!['cad', 'document', 'archive', 'image', 'video'].includes(file.file_type) && '📎'}
+                          </div>
+                          <div>
+                            <div className="font-medium text-gray-900">{file.filename}</div>
+                            <div className="text-sm text-gray-600 capitalize">{file.file_type}</div>
+                          </div>
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {file.file_size ? `${(file.file_size / (1024 * 1024)).toFixed(1)} MB` : 'Size unknown'}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-3">
                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
                   <span className="text-gray-600">File Format:</span>
                   <span className="font-semibold">{design.fileType || "PDF/CAD"}</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                  <span className="text-gray-600">File Size:</span>
-                  <span className="font-semibold">15-25 MB</span>
+                  <span className="text-gray-600">Total Files:</span>
+                  <span className="font-semibold">{design.design_files?.length || 1} files</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-gray-100">
                   <span className="text-gray-600">Compatibility:</span>
-                  <span className="font-semibold">AutoCAD, PDF Viewer</span>
+                  <span className="font-semibold">AutoCAD, PDF Viewer, Standard Image/Video Players</span>
                 </div>
                 <div className="flex justify-between items-center py-2">
                   <span className="text-gray-600">Updates:</span>
