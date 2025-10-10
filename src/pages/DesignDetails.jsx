@@ -197,9 +197,15 @@ export default function DesignDetails() {
                   )}
 
                   {/* Watermark Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-black/30 to-black/50 flex items-center justify-center">
-                    <div className="text-center text-white p-8">
-                      <FaLock className="text-6xl mx-auto mb-4 opacity-80" />
+                  <div className={`absolute inset-0 flex items-center justify-center ${mediaItems[selectedPreviewIndex].type === 'image'
+                      ? 'bg-gradient-to-br from-black/30 to-black/50 pointer-events-none'
+                      : 'bg-gradient-to-br from-black/10 to-black/20 pointer-events-none'
+                    }`}>
+                    <div className={`text-center text-white p-8 ${mediaItems[selectedPreviewIndex].type === 'image'
+                        ? 'opacity-100'
+                        : 'opacity-40'
+                      }`}>
+                      <FaLock className="text-6xl mx-auto mb-4" />
                       <h3 className="text-2xl font-bold mb-2">Watermarked Preview</h3>
                       <p className="opacity-90">Purchase to unlock full-resolution files</p>
                     </div>
@@ -251,8 +257,8 @@ export default function DesignDetails() {
                     key={index}
                     onClick={() => setSelectedPreviewIndex(index)}
                     className={`relative bg-white rounded-2xl shadow-lg overflow-hidden border-2 cursor-pointer transition-all duration-300 aspect-video ${selectedPreviewIndex === index
-                        ? 'border-blue-500 ring-2 ring-blue-200'
-                        : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-blue-500 ring-2 ring-blue-200'
+                      : 'border-gray-200 hover:border-gray-300'
                       }`}
                   >
                     {media.type === 'image' ? (
