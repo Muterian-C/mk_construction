@@ -60,15 +60,15 @@ export default function DesignDetails() {
   };
 
   const handleBuyNow = async () => {
-    if (design) {
-      try {
-        await addToCart(design.id);
-        window.location.href = '/checkout';
-      } catch (error) {
-        alert("Failed to add to cart. Please try again.");
-      }
+  if (design) {
+    try {
+      // Instead of adding to cart and redirecting, go directly to payment with design ID
+      window.location.href = `/checkout?design_id=${design.id}`;
+    } catch (error) {
+      alert("Failed to process purchase. Please try again.");
     }
-  };
+  }
+};
 
   // Get all media items (images + video)
   const getMediaItems = () => {
