@@ -313,7 +313,7 @@ export default function EditDesign() {
       });
 
       alert("✅ Design updated successfully!");
-      navigate("/admin/manage-designs");
+      navigate("/admin/designs");
     } catch (err) {
       console.error("Update error:", err);
       alert("❌ Failed to update design: " + (err.response?.data?.error || err.message));
