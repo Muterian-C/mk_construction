@@ -20,6 +20,7 @@ import Dashboard from "./pages/UsersDashboard";
 // In your main App.js or index.js
 import './styles/animations.css';
 import AdminDesignDetails from "./pages/admin/AdminDesignDetails";
+import PaymentPage from "./pages/Payment";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
             <Route path="/designs" element={<Gallery />} />
             <Route path="/designs/:id" element={<DesignDetails />} />
             <Route path="/cart" element={<CartPage />} />
+            <Route path="/checkout" element={<PaymentPage />} />
 
             {/* User dashboard */}
             <Route
