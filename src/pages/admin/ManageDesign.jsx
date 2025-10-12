@@ -4,8 +4,7 @@ import axios from "../../api/axios";
 import { useAuth } from "../../context/AuthContext";
 import { 
   FaSearch, FaFilter, FaStar, FaEye, FaEdit, FaTrash, FaChartBar, 
-  FaTag, FaUpload, FaImages, FaVideo, FaFile, FaExternalLinkAlt,
-  FaTimes, FaDownload, FaPlay, FaLock, FaUsers, FaShoppingCart
+  FaTag, FaUpload, FaImages, FaVideo, FaFile, FaExternalLinkAlt
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
@@ -14,10 +13,6 @@ const ManageDesigns = () => {
   const [designs, setDesigns] = useState([]);
   const [filteredDesigns, setFilteredDesigns] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedDesign, setSelectedDesign] = useState(null);
-  const [isAnalyticsOpen, setIsAnalyticsOpen] = useState(false);
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-  const [selectedPreviewIndex, setSelectedPreviewIndex] = useState(0);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
@@ -42,81 +37,17 @@ const ManageDesigns = () => {
     "Hotels", "Educational", "Religious"
   ];
 
-  // Fetch all designs with REAL analytics
+  // Fetch all designs
   const fetchDesigns = async () => {
     try {
       setLoading(true);
       const res = await axios.get("/api/get_designs");
-      
-      // Fetch real analytics for each design
-      const designsWithRealStats = await Promise.all(
-        res.data.map(async (design) => {
-          try {
-            // Fetch design details to get real view count, downloads, etc.
-            const designDetailsRes = await axios.get(`/api/designs/${design.id}`);
-            const designDetails = designDetailsRes.data;
-            
-            // Fetch real sales data
-            const salesRes = await axios.get(`/api/designs/${design.id}/sales`);
-            const salesData = salesRes.data;
-            
-            // Fetch real ratings/reviews
-            const ratingsRes = await axios.get(`/api/designs/${design.id}/reviews`);
-            const ratingsData = ratingsRes.data;
-            
-            return {
-              ...design,
-              // Real analytics data
-              salesCount: salesData.total_sales || 0,
-              totalRevenue: salesData.total_revenue || 0,
-              averageRating: ratingsData.average_rating || 0,
-              viewCount: designDetails.view_count || 0,
-              downloads: designDetails.downloads || 0,
-              rating: ratingsData.average_rating || "0.0",
-              // Real file data
-              preview_urls: designDetails.preview_urls || [design.preview_url],
-              video_url: designDetails.video_url,
-              design_files: designDetails.design_files || [],
-              fileType: designDetails.file_type || "PDF/CAD",
-              features: designDetails.features || []
-            };
-          } catch (error) {
-            console.error("Error fetching real stats for design:", design.id, error);
-            // Fallback to design basic data if analytics fail
-            return {
-              ...design,
-              salesCount: 0,
-              totalRevenue: 0,
-              averageRating: 0,
-              viewCount: design.view_count || 0,
-              downloads: design.downloads || 0,
-              rating: design.rating || "0.0",
-              preview_urls: design.preview_urls || [design.preview_url],
-              video_url: design.video_url,
-              design_files: design.design_files || [],
-              fileType: design.file_type || "PDF/CAD",
-              features: design.features || []
-            };
-          }
-        })
-      );
-      setDesigns(designsWithRealStats);
-      setFilteredDesigns(designsWithRealStats);
+      setDesigns(res.data);
+      setFilteredDesigns(res.data);
     } catch (err) {
       console.error("Error fetching designs:", err);
     } finally {
       setLoading(false);
-    }
-  };
-
-  // Fetch individual design details for modal
-  const fetchDesignDetails = async (designId) => {
-    try {
-      const response = await axios.get(`/api/designs/${designId}`);
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching design details:", error);
-      return null;
     }
   };
 
@@ -241,12 +172,9 @@ const ManageDesigns = () => {
     navigate(`/admin/edit-design/${design.id}`);
   };
 
-  const handleViewDetails = async (design) => {
-    // Fetch fresh design details before showing modal
-    const freshDesignData = await fetchDesignDetails(design.id);
-    setSelectedDesign(freshDesignData || design);
-    setSelectedPreviewIndex(0);
-    setIsDetailsOpen(true);
+  // NEW: Navigate to admin design details
+  const handleViewDetails = (design) => {
+    navigate(`/admin/designs/${design.id}`);
   };
 
   const handleToggleFeatured = async (design) => {
@@ -280,35 +208,6 @@ const ManageDesigns = () => {
     }
   };
 
-  const handleViewAnalytics = async (design) => {
-    // Fetch fresh analytics data before showing modal
-    try {
-      const [salesRes, ratingsRes, designRes] = await Promise.all([
-        axios.get(`/api/designs/${design.id}/sales`),
-        axios.get(`/api/designs/${design.id}/reviews`),
-        axios.get(`/api/designs/${design.id}`)
-      ]);
-
-      const designWithFreshAnalytics = {
-        ...design,
-        salesCount: salesRes.data.total_sales || 0,
-        totalRevenue: salesRes.data.total_revenue || 0,
-        averageRating: ratingsRes.data.average_rating || 0,
-        viewCount: designRes.data.view_count || 0,
-        downloads: designRes.data.downloads || 0,
-        rating: ratingsRes.data.average_rating || "0.0"
-      };
-
-      setSelectedDesign(designWithFreshAnalytics);
-      setIsAnalyticsOpen(true);
-    } catch (error) {
-      console.error("Error fetching fresh analytics:", error);
-      // Fallback to current data
-      setSelectedDesign(design);
-      setIsAnalyticsOpen(true);
-    }
-  };
-
   const getBestSeller = () => {
     if (designs.length === 0) return { title: "None", sales: 0 };
     const bestSeller = designs.reduce((prev, current) => 
@@ -328,45 +227,6 @@ const ManageDesigns = () => {
     
     const totalRating = designsWithRatings.reduce((sum, design) => sum + (design.averageRating || 0), 0);
     return (totalRating / designsWithRatings.length).toFixed(1);
-  };
-
-  const calculateTotalViews = () => {
-    return designs.reduce((total, design) => total + (design.viewCount || 0), 0);
-  };
-
-  const calculateTotalDownloads = () => {
-    return designs.reduce((total, design) => total + (design.downloads || 0), 0);
-  };
-
-  // Get all media items for the selected design
-  const getMediaItems = (design) => {
-    const items = [];
-    
-    if (design.preview_urls && design.preview_urls.length > 0) {
-      design.preview_urls.forEach((url, index) => {
-        items.push({
-          type: 'image',
-          url: url,
-          index: index,
-        });
-      });
-    } else {
-      items.push({
-        type: 'image',
-        url: design.preview_url,
-        index: 0,
-      });
-    }
-    
-    if (design.video_url) {
-      items.push({
-        type: 'video',
-        url: design.video_url,
-        index: items.length,
-      });
-    }
-    
-    return items;
   };
 
   if (loading) {
@@ -389,7 +249,7 @@ const ManageDesigns = () => {
             Manage <span className="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">Designs</span>
           </h1>
           <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto leading-relaxed text-gray-200">
-            Manage your architectural designs, track performance, and analyze real-time analytics.
+            Manage your architectural designs, track performance, and analyze sales analytics.
           </p>
         </div>
 
@@ -470,33 +330,11 @@ const ManageDesigns = () => {
               color="green" 
             />
             <StatCard 
-              title="Total Views" 
-              value={calculateTotalViews().toLocaleString()} 
-              icon="👁️" 
-              color="purple" 
-            />
-          </div>
-
-          {/* Second Row Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <StatCard 
               title="Avg. Rating" 
               value={calculateAverageRating()} 
               icon="⭐" 
               color="yellow" 
               subtitle="from reviews"
-            />
-            <StatCard 
-              title="Total Downloads" 
-              value={calculateTotalDownloads().toLocaleString()} 
-              icon="📥" 
-              color="indigo" 
-            />
-            <StatCard 
-              title="Total Customers" 
-              value={designs.reduce((total, design) => total + (design.salesCount || 0), 0).toLocaleString()} 
-              icon="👥" 
-              color="teal" 
             />
           </div>
 
@@ -632,7 +470,6 @@ const ManageDesigns = () => {
                     onDelete={handleDelete}
                     onToggleFeatured={handleToggleFeatured}
                     onUpdatePrice={handleUpdatePrice}
-                    onViewAnalytics={handleViewAnalytics}
                     onViewDetails={handleViewDetails}
                   />
                 ))}
@@ -641,37 +478,17 @@ const ManageDesigns = () => {
           </div>
         </div>
       </section>
-
-      {/* Analytics Modal */}
-      <DesignAnalyticsModal
-        design={selectedDesign}
-        isOpen={isAnalyticsOpen}
-        onClose={() => setIsAnalyticsOpen(false)}
-      />
-
-      {/* Design Details Modal */}
-      <DesignDetailsModal
-        design={selectedDesign}
-        isOpen={isDetailsOpen}
-        onClose={() => setIsDetailsOpen(false)}
-        selectedPreviewIndex={selectedPreviewIndex}
-        onPreviewChange={setSelectedPreviewIndex}
-        getMediaItems={getMediaItems}
-      />
     </div>
   );
 };
 
-// Enhanced Stat Card Component
+// Stat Card Component
 const StatCard = ({ title, value, icon, color, subtitle }) => {
   const colorClasses = {
     blue: "from-blue-500 to-blue-600",
     red: "from-red-500 to-red-600",
     green: "from-green-500 to-green-600",
     yellow: "from-yellow-500 to-yellow-600",
-    purple: "from-purple-500 to-purple-600",
-    indigo: "from-indigo-500 to-indigo-600",
-    teal: "from-teal-500 to-teal-600",
   };
 
   return (
@@ -690,14 +507,13 @@ const StatCard = ({ title, value, icon, color, subtitle }) => {
   );
 };
 
-// Enhanced Design Card Component with View Details
+// Design Card Component
 const DesignCard = ({ 
   design, 
   onEdit, 
   onDelete, 
   onToggleFeatured, 
   onUpdatePrice, 
-  onViewAnalytics,
   onViewDetails 
 }) => (
   <div className="group relative bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100 overflow-hidden">
@@ -719,11 +535,6 @@ const DesignCard = ({
         <span className="bg-black/80 text-white px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
           {design.category}
         </span>
-      </div>
-
-      {/* Analytics Badge */}
-      <div className="absolute top-4 right-4 bg-black/60 text-white px-2 py-1 rounded-full text-xs backdrop-blur-sm">
-        <FaEye className="inline mr-1" /> {design.viewCount || 0}
       </div>
 
       {/* View Details Overlay */}
@@ -773,8 +584,8 @@ const DesignCard = ({
       {/* Performance Metrics */}
       <div className="grid grid-cols-2 gap-3 mb-4">
         <div className="text-center p-2 bg-gray-50 rounded-lg">
-          <div className="font-bold text-gray-900">{design.salesCount || 0}</div>
-          <div className="text-xs text-gray-600">Sales</div>
+          <div className="font-bold text-gray-900">{design.viewCount || 0}</div>
+          <div className="text-xs text-gray-600">Views</div>
         </div>
         <div className="text-center p-2 bg-gray-50 rounded-lg">
           <div className="font-bold text-gray-900">KES {(design.totalRevenue || 0).toLocaleString()}</div>
@@ -801,13 +612,6 @@ const DesignCard = ({
         >
           <FaExternalLinkAlt />
           Details
-        </button>
-        <button
-          onClick={() => onViewAnalytics(design)}
-          className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-2 px-3 rounded-2xl text-sm font-semibold transition-all duration-300"
-        >
-          <FaChartBar />
-          Analytics
         </button>
         <button
           onClick={() => onEdit(design)}
@@ -841,298 +645,5 @@ const DesignCard = ({
     </div>
   </div>
 );
-
-// Enhanced Analytics Modal with REAL data
-const DesignAnalyticsModal = ({ design, isOpen, onClose }) => {
-  if (!isOpen || !design) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
-        <div className="relative bg-gradient-to-r from-gray-900 to-red-800 text-white p-6">
-          <h3 className="text-2xl font-bold">Analytics for {design.title}</h3>
-          <button 
-            onClick={onClose}
-            className="absolute top-4 right-6 text-white hover:text-gray-200 text-2xl"
-          >
-            ✕
-          </button>
-        </div>
-        
-        <div className="p-6">
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <StatCard title="Total Sales" value={design.salesCount || 0} icon="🛒" color="blue" />
-            <StatCard title="Total Revenue" value={`KES ${(design.totalRevenue || 0).toLocaleString()}`} icon="💰" color="green" />
-            <StatCard title="Average Rating" value={design.averageRating || "0.0"} icon="⭐" color="yellow" />
-            <StatCard title="Total Views" value={design.viewCount || 0} icon="👁️" color="purple" />
-            <StatCard title="Downloads" value={design.downloads || 0} icon="📥" color="indigo" />
-            <StatCard title="Customer Rating" value={design.rating || "0.0"} icon="⭐" color="teal" />
-          </div>
-          
-          {/* File Information */}
-          <div className="bg-gray-50 rounded-2xl p-4 mb-6">
-            <h4 className="font-semibold text-gray-800 mb-3">Design Files</h4>
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div>
-                <div className="text-2xl font-bold text-blue-600">{design.preview_urls?.length || 1}</div>
-                <div className="text-sm text-gray-600">Preview Images</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-green-600">{design.video_url ? 1 : 0}</div>
-                <div className="text-sm text-gray-600">Videos</div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-purple-600">{design.design_files?.length || 1}</div>
-                <div className="text-sm text-gray-600">Design Files</div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex justify-end">
-            <button 
-              onClick={onClose}
-              className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-2xl font-semibold transition-all duration-300"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// New Design Details Modal with REAL data
-const DesignDetailsModal = ({ design, isOpen, onClose, selectedPreviewIndex, onPreviewChange, getMediaItems }) => {
-  if (!isOpen || !design) return null;
-
-  const mediaItems = getMediaItems(design);
-  const hasMultipleMedia = mediaItems.length > 1;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-6xl max-h-[95vh] overflow-hidden">
-        <div className="relative bg-gradient-to-r from-gray-900 to-red-800 text-white p-6">
-          <h3 className="text-2xl font-bold">Design Details: {design.title}</h3>
-          <button 
-            onClick={onClose}
-            className="absolute top-4 right-6 text-white hover:text-gray-200 text-2xl"
-          >
-            ✕
-          </button>
-        </div>
-        
-        <div className="p-6 overflow-y-auto max-h-[80vh]">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Media Section */}
-            <div className="space-y-4">
-              <h4 className="text-xl font-bold text-gray-800 mb-4">Design Preview</h4>
-              
-              {/* Main Media Display */}
-              <div className="relative bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200">
-                {mediaItems.length > 0 && (
-                  <>
-                    {mediaItems[selectedPreviewIndex].type === 'image' ? (
-                      <img
-                        src={mediaItems[selectedPreviewIndex].url}
-                        alt={`${design.title} - View ${selectedPreviewIndex + 1}`}
-                        className="w-full h-80 object-cover"
-                      />
-                    ) : (
-                      <div className="relative w-full h-80 bg-black">
-                        <video
-                          src={mediaItems[selectedPreviewIndex].url}
-                          className="w-full h-full object-contain"
-                          controls
-                          poster={design.preview_urls?.[0] || design.preview_url}
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <FaPlay className="text-white text-4xl opacity-80" />
-                        </div>
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-
-              {/* Thumbnail Gallery */}
-              {hasMultipleMedia && (
-                <div className="grid grid-cols-4 gap-2">
-                  {mediaItems.map((media, index) => (
-                    <div 
-                      key={index}
-                      onClick={() => onPreviewChange(index)}
-                      className={`relative bg-white rounded-lg shadow-md overflow-hidden border-2 cursor-pointer transition-all duration-300 aspect-square ${
-                        selectedPreviewIndex === index 
-                          ? 'border-blue-500 ring-2 ring-blue-200' 
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      {media.type === 'image' ? (
-                        <img
-                          src={media.url}
-                          alt={`Thumbnail ${index + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gray-800 flex items-center justify-center">
-                          <FaVideo className="text-white" />
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Design Details Section */}
-            <div className="space-y-6">
-              <h4 className="text-xl font-bold text-gray-800 mb-4">Design Information</h4>
-              
-              {/* Basic Info */}
-              <div className="bg-gray-50 rounded-2xl p-6">
-                <h5 className="font-semibold text-gray-700 mb-4">Basic Information</h5>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Title:</span>
-                    <span className="font-semibold">{design.title}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Category:</span>
-                    <span className="font-semibold bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm">
-                      {design.category}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Price:</span>
-                    <span className="font-bold text-green-600">KES {design.price?.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">File Type:</span>
-                    <span className="font-semibold">{design.fileType || "PDF/CAD"}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Featured:</span>
-                    <span className={`font-semibold ${design.is_featured ? 'text-green-600' : 'text-gray-600'}`}>
-                      {design.is_featured ? 'Yes' : 'No'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Description */}
-              <div className="bg-gray-50 rounded-2xl p-6">
-                <h5 className="font-semibold text-gray-700 mb-3">Description</h5>
-                <p className="text-gray-600 leading-relaxed">{design.description}</p>
-              </div>
-
-              {/* Performance Stats */}
-              <div className="bg-gray-50 rounded-2xl p-6">
-                <h5 className="font-semibold text-gray-700 mb-4">Performance</h5>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-3 bg-white rounded-lg shadow-sm">
-                    <div className="text-2xl font-bold text-blue-600">{design.salesCount || 0}</div>
-                    <div className="text-sm text-gray-600">Total Sales</div>
-                  </div>
-                  <div className="text-center p-3 bg-white rounded-lg shadow-sm">
-                    <div className="text-2xl font-bold text-green-600">
-                      KES {(design.totalRevenue || 0).toLocaleString()}
-                    </div>
-                    <div className="text-sm text-gray-600">Revenue</div>
-                  </div>
-                  <div className="text-center p-3 bg-white rounded-lg shadow-sm">
-                    <div className="text-2xl font-bold text-yellow-600 flex items-center justify-center gap-1">
-                      <FaStar className="text-yellow-400" />
-                      {design.averageRating || "0.0"}
-                    </div>
-                    <div className="text-sm text-gray-600">Rating</div>
-                  </div>
-                  <div className="text-center p-3 bg-white rounded-lg shadow-sm">
-                    <div className="text-2xl font-bold text-purple-600">{design.viewCount || 0}</div>
-                    <div className="text-sm text-gray-600">Views</div>
-                  </div>
-                  <div className="text-center p-3 bg-white rounded-lg shadow-sm">
-                    <div className="text-2xl font-bold text-indigo-600">{design.downloads || 0}</div>
-                    <div className="text-sm text-gray-600">Downloads</div>
-                  </div>
-                  <div className="text-center p-3 bg-white rounded-lg shadow-sm">
-                    <div className="text-2xl font-bold text-teal-600">{design.rating || "0.0"}</div>
-                    <div className="text-sm text-gray-600">Customer Rating</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* File Downloads */}
-              <div className="bg-gray-50 rounded-2xl p-6">
-                <h5 className="font-semibold text-gray-700 mb-4">Design Files</h5>
-                <div className="space-y-3">
-                  <button className="w-full flex items-center justify-between bg-white hover:bg-gray-100 border border-gray-200 rounded-2xl p-4 transition-all duration-300">
-                    <div className="flex items-center gap-3">
-                      <FaImages className="text-blue-500 text-xl" />
-                      <div className="text-left">
-                        <div className="font-semibold text-gray-800">Preview Images</div>
-                        <div className="text-sm text-gray-600">
-                          {design.preview_urls?.length || 1} files available
-                        </div>
-                      </div>
-                    </div>
-                    <FaDownload className="text-gray-400" />
-                  </button>
-                  
-                  {design.video_url && (
-                    <button className="w-full flex items-center justify-between bg-white hover:bg-gray-100 border border-gray-200 rounded-2xl p-4 transition-all duration-300">
-                      <div className="flex items-center gap-3">
-                        <FaVideo className="text-green-500 text-xl" />
-                        <div className="text-left">
-                          <div className="font-semibold text-gray-800">Video Render</div>
-                          <div className="text-sm text-gray-600">MP4 file</div>
-                        </div>
-                      </div>
-                      <FaDownload className="text-gray-400" />
-                    </button>
-                  )}
-                  
-                  <button className="w-full flex items-center justify-between bg-white hover:bg-gray-100 border border-gray-200 rounded-2xl p-4 transition-all duration-300">
-                    <div className="flex items-center gap-3">
-                      <FaLock className="text-red-500 text-xl" />
-                      <div className="text-left">
-                        <div className="font-semibold text-gray-800">Design Files (Protected)</div>
-                        <div className="text-sm text-gray-600">
-                          {design.design_files?.length || 1} files - Customer access only
-                        </div>
-                      </div>
-                    </div>
-                    <FaExternalLinkAlt className="text-gray-400" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="border-t border-gray-200 p-6 bg-gray-50">
-          <div className="flex justify-end gap-3">
-            <button 
-              onClick={onClose}
-              className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-2xl font-semibold transition-all duration-300"
-            >
-              Close
-            </button>
-            <button 
-              onClick={() => {
-                // Handle download or other actions
-                onClose();
-              }}
-              className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-2xl font-semibold transition-all duration-300 flex items-center gap-2"
-            >
-              <FaDownload />
-              Export Details
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 export default ManageDesigns;

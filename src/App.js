@@ -54,7 +54,16 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            
+            // Add this to your routes
+            <Route
+              path="/admin/designs/:id"
+              element={
+                <ProtectedRoute role="admin">
+                  <AdminDesignDetails />
+                </ProtectedRoute>
+              }
+            />
+
             <Route
               path="/admin/add-design"
               element={
@@ -63,7 +72,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            
+
             <Route
               path="/admin/designs"
               element={
@@ -72,7 +81,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            
+
             <Route
               path="/admin/users"
               element={
@@ -81,7 +90,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            
+
             <Route
               path="/admin/edit-design/:id"
               element={
