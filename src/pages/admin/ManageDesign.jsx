@@ -5,7 +5,7 @@ import { useAuth } from "../../context/AuthContext";
 import { 
   FaSearch, FaFilter, FaStar, FaEye, FaEdit, FaTrash, FaChartBar, 
   FaTag, FaUpload, FaImages, FaVideo, FaFile, FaExternalLinkAlt,
-  FaTimes, FaDownload, FaPlay, FaLock
+  FaTimes, FaDownload, FaPlay, FaLock, FaUsers, FaShoppingCart
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
@@ -42,40 +42,81 @@ const ManageDesigns = () => {
     "Hotels", "Educational", "Religious"
   ];
 
-  // Fetch all designs
+  // Fetch all designs with REAL analytics
   const fetchDesigns = async () => {
     try {
       setLoading(true);
       const res = await axios.get("/api/get_designs");
-      const designsWithStats = await Promise.all(
+      
+      // Fetch real analytics for each design
+      const designsWithRealStats = await Promise.all(
         res.data.map(async (design) => {
           try {
-            const statsRes = await axios.get(`/api/designs/${design.id}/stats`);
+            // Fetch design details to get real view count, downloads, etc.
+            const designDetailsRes = await axios.get(`/api/designs/${design.id}`);
+            const designDetails = designDetailsRes.data;
+            
+            // Fetch real sales data
+            const salesRes = await axios.get(`/api/designs/${design.id}/sales`);
+            const salesData = salesRes.data;
+            
+            // Fetch real ratings/reviews
+            const ratingsRes = await axios.get(`/api/designs/${design.id}/reviews`);
+            const ratingsData = ratingsRes.data;
+            
             return {
               ...design,
-              salesCount: statsRes.data.sales_count,
-              totalRevenue: statsRes.data.total_revenue,
-              averageRating: statsRes.data.average_rating,
-              viewCount: statsRes.data.view_count,
+              // Real analytics data
+              salesCount: salesData.total_sales || 0,
+              totalRevenue: salesData.total_revenue || 0,
+              averageRating: ratingsData.average_rating || 0,
+              viewCount: designDetails.view_count || 0,
+              downloads: designDetails.downloads || 0,
+              rating: ratingsData.average_rating || "0.0",
+              // Real file data
+              preview_urls: designDetails.preview_urls || [design.preview_url],
+              video_url: designDetails.video_url,
+              design_files: designDetails.design_files || [],
+              fileType: designDetails.file_type || "PDF/CAD",
+              features: designDetails.features || []
             };
           } catch (error) {
-            console.error("Error fetching stats for design:", design.id, error);
+            console.error("Error fetching real stats for design:", design.id, error);
+            // Fallback to design basic data if analytics fail
             return {
               ...design,
-              salesCount: 5000,
+              salesCount: 0,
               totalRevenue: 0,
-              averageRating: 4.9,
-              viewCount: 7498,
+              averageRating: 0,
+              viewCount: design.view_count || 0,
+              downloads: design.downloads || 0,
+              rating: design.rating || "0.0",
+              preview_urls: design.preview_urls || [design.preview_url],
+              video_url: design.video_url,
+              design_files: design.design_files || [],
+              fileType: design.file_type || "PDF/CAD",
+              features: design.features || []
             };
           }
         })
       );
-      setDesigns(designsWithStats);
-      setFilteredDesigns(designsWithStats);
+      setDesigns(designsWithRealStats);
+      setFilteredDesigns(designsWithRealStats);
     } catch (err) {
       console.error("Error fetching designs:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Fetch individual design details for modal
+  const fetchDesignDetails = async (designId) => {
+    try {
+      const response = await axios.get(`/api/designs/${designId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching design details:", error);
+      return null;
     }
   };
 
@@ -200,8 +241,10 @@ const ManageDesigns = () => {
     navigate(`/admin/edit-design/${design.id}`);
   };
 
-  const handleViewDetails = (design) => {
-    setSelectedDesign(design);
+  const handleViewDetails = async (design) => {
+    // Fetch fresh design details before showing modal
+    const freshDesignData = await fetchDesignDetails(design.id);
+    setSelectedDesign(freshDesignData || design);
     setSelectedPreviewIndex(0);
     setIsDetailsOpen(true);
   };
@@ -237,9 +280,33 @@ const ManageDesigns = () => {
     }
   };
 
-  const handleViewAnalytics = (design) => {
-    setSelectedDesign(design);
-    setIsAnalyticsOpen(true);
+  const handleViewAnalytics = async (design) => {
+    // Fetch fresh analytics data before showing modal
+    try {
+      const [salesRes, ratingsRes, designRes] = await Promise.all([
+        axios.get(`/api/designs/${design.id}/sales`),
+        axios.get(`/api/designs/${design.id}/reviews`),
+        axios.get(`/api/designs/${design.id}`)
+      ]);
+
+      const designWithFreshAnalytics = {
+        ...design,
+        salesCount: salesRes.data.total_sales || 0,
+        totalRevenue: salesRes.data.total_revenue || 0,
+        averageRating: ratingsRes.data.average_rating || 0,
+        viewCount: designRes.data.view_count || 0,
+        downloads: designRes.data.downloads || 0,
+        rating: ratingsRes.data.average_rating || "0.0"
+      };
+
+      setSelectedDesign(designWithFreshAnalytics);
+      setIsAnalyticsOpen(true);
+    } catch (error) {
+      console.error("Error fetching fresh analytics:", error);
+      // Fallback to current data
+      setSelectedDesign(design);
+      setIsAnalyticsOpen(true);
+    }
   };
 
   const getBestSeller = () => {
@@ -261,6 +328,14 @@ const ManageDesigns = () => {
     
     const totalRating = designsWithRatings.reduce((sum, design) => sum + (design.averageRating || 0), 0);
     return (totalRating / designsWithRatings.length).toFixed(1);
+  };
+
+  const calculateTotalViews = () => {
+    return designs.reduce((total, design) => total + (design.viewCount || 0), 0);
+  };
+
+  const calculateTotalDownloads = () => {
+    return designs.reduce((total, design) => total + (design.downloads || 0), 0);
   };
 
   // Get all media items for the selected design
@@ -314,7 +389,7 @@ const ManageDesigns = () => {
             Manage <span className="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">Designs</span>
           </h1>
           <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto leading-relaxed text-gray-200">
-            Manage your architectural designs, track performance, and analyze sales analytics.
+            Manage your architectural designs, track performance, and analyze real-time analytics.
           </p>
         </div>
 
@@ -395,11 +470,33 @@ const ManageDesigns = () => {
               color="green" 
             />
             <StatCard 
+              title="Total Views" 
+              value={calculateTotalViews().toLocaleString()} 
+              icon="👁️" 
+              color="purple" 
+            />
+          </div>
+
+          {/* Second Row Metrics */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <StatCard 
               title="Avg. Rating" 
               value={calculateAverageRating()} 
               icon="⭐" 
               color="yellow" 
               subtitle="from reviews"
+            />
+            <StatCard 
+              title="Total Downloads" 
+              value={calculateTotalDownloads().toLocaleString()} 
+              icon="📥" 
+              color="indigo" 
+            />
+            <StatCard 
+              title="Total Customers" 
+              value={designs.reduce((total, design) => total + (design.salesCount || 0), 0).toLocaleString()} 
+              icon="👥" 
+              color="teal" 
             />
           </div>
 
@@ -572,6 +669,9 @@ const StatCard = ({ title, value, icon, color, subtitle }) => {
     red: "from-red-500 to-red-600",
     green: "from-green-500 to-green-600",
     yellow: "from-yellow-500 to-yellow-600",
+    purple: "from-purple-500 to-purple-600",
+    indigo: "from-indigo-500 to-indigo-600",
+    teal: "from-teal-500 to-teal-600",
   };
 
   return (
@@ -742,7 +842,7 @@ const DesignCard = ({
   </div>
 );
 
-// Enhanced Analytics Modal
+// Enhanced Analytics Modal with REAL data
 const DesignAnalyticsModal = ({ design, isOpen, onClose }) => {
   if (!isOpen || !design) return null;
 
@@ -765,6 +865,8 @@ const DesignAnalyticsModal = ({ design, isOpen, onClose }) => {
             <StatCard title="Total Revenue" value={`KES ${(design.totalRevenue || 0).toLocaleString()}`} icon="💰" color="green" />
             <StatCard title="Average Rating" value={design.averageRating || "0.0"} icon="⭐" color="yellow" />
             <StatCard title="Total Views" value={design.viewCount || 0} icon="👁️" color="purple" />
+            <StatCard title="Downloads" value={design.downloads || 0} icon="📥" color="indigo" />
+            <StatCard title="Customer Rating" value={design.rating || "0.0"} icon="⭐" color="teal" />
           </div>
           
           {/* File Information */}
@@ -800,7 +902,7 @@ const DesignAnalyticsModal = ({ design, isOpen, onClose }) => {
   );
 };
 
-// New Design Details Modal
+// New Design Details Modal with REAL data
 const DesignDetailsModal = ({ design, isOpen, onClose, selectedPreviewIndex, onPreviewChange, getMediaItems }) => {
   if (!isOpen || !design) return null;
 
@@ -907,7 +1009,7 @@ const DesignDetailsModal = ({ design, isOpen, onClose, selectedPreviewIndex, onP
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">File Type:</span>
-                    <span className="font-semibold">{design.file_type || "PDF/CAD"}</span>
+                    <span className="font-semibold">{design.fileType || "PDF/CAD"}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Featured:</span>
@@ -948,6 +1050,14 @@ const DesignDetailsModal = ({ design, isOpen, onClose, selectedPreviewIndex, onP
                   <div className="text-center p-3 bg-white rounded-lg shadow-sm">
                     <div className="text-2xl font-bold text-purple-600">{design.viewCount || 0}</div>
                     <div className="text-sm text-gray-600">Views</div>
+                  </div>
+                  <div className="text-center p-3 bg-white rounded-lg shadow-sm">
+                    <div className="text-2xl font-bold text-indigo-600">{design.downloads || 0}</div>
+                    <div className="text-sm text-gray-600">Downloads</div>
+                  </div>
+                  <div className="text-center p-3 bg-white rounded-lg shadow-sm">
+                    <div className="text-2xl font-bold text-teal-600">{design.rating || "0.0"}</div>
+                    <div className="text-sm text-gray-600">Customer Rating</div>
                   </div>
                 </div>
               </div>
