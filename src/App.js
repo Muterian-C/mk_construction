@@ -19,6 +19,7 @@ import Footer from "./pages/Footer";
 import Dashboard from "./pages/UsersDashboard";
 // In your main App.js or index.js
 import './styles/animations.css';
+import AdminDesignDetails from "./pages/admin/AdminDesignDetails";
 
 function App() {
   return (
