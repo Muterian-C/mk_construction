@@ -36,8 +36,8 @@ function App() {
             <Route path="/designs" element={<Gallery />} />
             <Route path="/designs/:id" element={<DesignDetails />} />
             <Route path="/cart" element={<CartPage />} />
-            <Route path="/checkout" element={<PaymentPage />} />
-
+            // In your App.js, add this route:
+            <Route path="/checkout/:design_id?" element={<PaymentPage />} />
             {/* User dashboard */}
             <Route
               path="/dashboard"
