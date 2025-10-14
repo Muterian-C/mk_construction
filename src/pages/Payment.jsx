@@ -22,7 +22,7 @@ const PaymentPage = () => {
   const location = useLocation();
   const { user, isAuthenticated, token } = useAuth();
   const { cartItems, clearCart } = useCart();
-  
+
   const [design, setDesign] = useState(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
@@ -67,6 +67,7 @@ const PaymentPage = () => {
     try {
       const response = await axios.get(`/api/designs/${id}`);
       setDesign(response.data);
+      setLoading(false);  // ✅ ADD THIS LINE - stop loading after success
     } catch (error) {
       console.error("Error fetching design:", error);
       setLoading(false);
@@ -92,7 +93,7 @@ const PaymentPage = () => {
       if (!cardDetails.expiry.trim()) newErrors.cardExpiry = "Expiry date is required";
       if (!cardDetails.cvv.trim()) newErrors.cardCvv = "CVV is required";
       if (!cardDetails.name.trim()) newErrors.cardName = "Cardholder name is required";
-      
+
       // Basic card validation
       if (cardDetails.number && !/^\d{16}$/.test(cardDetails.number.replace(/\s/g, ''))) {
         newErrors.cardNumber = "Please enter a valid 16-digit card number";
@@ -114,7 +115,7 @@ const PaymentPage = () => {
 
   const handlePayment = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setProcessing(true);
@@ -150,7 +151,7 @@ const PaymentPage = () => {
       if (response.data.success) {
         setSuccess(true);
         setOrderDetails(response.data.order);
-        
+
         // Clear cart if this was a cart purchase
         if (isCartPurchase) {
           clearCart();
@@ -242,7 +243,7 @@ const PaymentPage = () => {
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <FaCheckCircle className="text-green-600 text-4xl" />
             </div>
-            
+
             <h1 className="text-3xl font-bold text-gray-800 mb-4">Payment Successful!</h1>
             <p className="text-gray-600 mb-6">
               Thank you for your purchase. Your design files are now available for download.
@@ -320,11 +321,10 @@ const PaymentPage = () => {
                     <div
                       key={method.id}
                       onClick={() => setPaymentMethod(method.id)}
-                      className={`border-2 rounded-2xl p-4 cursor-pointer transition-all duration-300 ${
-                        paymentMethod === method.id
+                      className={`border-2 rounded-2xl p-4 cursor-pointer transition-all duration-300 ${paymentMethod === method.id
                           ? `border-red-500 bg-red-50 ring-2 ring-red-200`
                           : "border-gray-200 hover:border-gray-300"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-3">
@@ -363,9 +363,8 @@ const PaymentPage = () => {
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
                         placeholder="e.g., 0712 345 678 or +254712345678"
-                        className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                          errors.phoneNumber ? "border-red-500" : "border-gray-300"
-                        }`}
+                        className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.phoneNumber ? "border-red-500" : "border-gray-300"
+                          }`}
                       />
                       {errors.phoneNumber && (
                         <p className="text-red-600 text-sm mt-1">{errors.phoneNumber}</p>
@@ -394,15 +393,14 @@ const PaymentPage = () => {
                           value={cardDetails.name}
                           onChange={(e) => setCardDetails(prev => ({ ...prev, name: e.target.value }))}
                           placeholder="Full name as shown on card"
-                          className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.cardName ? "border-red-500" : "border-gray-300"
-                          }`}
+                          className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.cardName ? "border-red-500" : "border-gray-300"
+                            }`}
                         />
                         {errors.cardName && (
                           <p className="text-red-600 text-sm mt-1">{errors.cardName}</p>
                         )}
                       </div>
-                      
+
                       <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Card Number *
@@ -413,15 +411,14 @@ const PaymentPage = () => {
                           onChange={(e) => setCardDetails(prev => ({ ...prev, number: e.target.value }))}
                           placeholder="1234 5678 9012 3456"
                           maxLength={19}
-                          className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.cardNumber ? "border-red-500" : "border-gray-300"
-                          }`}
+                          className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.cardNumber ? "border-red-500" : "border-gray-300"
+                            }`}
                         />
                         {errors.cardNumber && (
                           <p className="text-red-600 text-sm mt-1">{errors.cardNumber}</p>
                         )}
                       </div>
-                      
+
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Expiry Date *
@@ -432,15 +429,14 @@ const PaymentPage = () => {
                           onChange={(e) => setCardDetails(prev => ({ ...prev, expiry: e.target.value }))}
                           placeholder="MM/YY"
                           maxLength={5}
-                          className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.cardExpiry ? "border-red-500" : "border-gray-300"
-                          }`}
+                          className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.cardExpiry ? "border-red-500" : "border-gray-300"
+                            }`}
                         />
                         {errors.cardExpiry && (
                           <p className="text-red-600 text-sm mt-1">{errors.cardExpiry}</p>
                         )}
                       </div>
-                      
+
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           CVV *
@@ -451,9 +447,8 @@ const PaymentPage = () => {
                           onChange={(e) => setCardDetails(prev => ({ ...prev, cvv: e.target.value }))}
                           placeholder="123"
                           maxLength={4}
-                          className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                            errors.cardCvv ? "border-red-500" : "border-gray-300"
-                          }`}
+                          className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.cardCvv ? "border-red-500" : "border-gray-300"
+                            }`}
                         />
                         {errors.cardCvv && (
                           <p className="text-red-600 text-sm mt-1">{errors.cardCvv}</p>
@@ -479,9 +474,8 @@ const PaymentPage = () => {
                         value={paypalEmail}
                         onChange={(e) => setPaypalEmail(e.target.value)}
                         placeholder="your-email@example.com"
-                        className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 ${
-                          errors.paypalEmail ? "border-red-500" : "border-gray-300"
-                        }`}
+                        className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.paypalEmail ? "border-red-500" : "border-gray-300"
+                          }`}
                       />
                       {errors.paypalEmail && (
                         <p className="text-red-600 text-sm mt-1">{errors.paypalEmail}</p>
@@ -537,7 +531,7 @@ const PaymentPage = () => {
           <div className="lg:w-1/3">
             <div className="bg-white rounded-3xl shadow-2xl p-6 border border-gray-200 sticky top-8">
               <h2 className="text-xl font-semibold text-gray-800 mb-6">Order Summary</h2>
-              
+
               <div className="space-y-4 mb-6">
                 {designs.map((item, index) => (
                   <div key={index} className="flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
