@@ -45,6 +45,7 @@ const PaymentPage = () => {
 
   useEffect(() => {
     if (!isAuthenticated) {
+      setLoading(false);
       navigate("/login", { state: { from: location.pathname } });
       return;
     }
@@ -55,6 +56,10 @@ const PaymentPage = () => {
     } else if (id) {
       // For single design purchase, fetch design details
       fetchDesignDetails();
+    } else {
+      // No design ID and not cart purchase - invalid state
+      setLoading(false);
+      navigate("/designs");
     }
   }, [id, isCartPurchase, isAuthenticated, navigate, location]);
 
@@ -64,10 +69,8 @@ const PaymentPage = () => {
       setDesign(response.data);
     } catch (error) {
       console.error("Error fetching design:", error);
-      alert("Error loading design details");
-      navigate("/designs");
-    } finally {
       setLoading(false);
+      navigate("/designs");
     }
   };
 
@@ -197,6 +200,35 @@ const PaymentPage = () => {
         <div className="container mx-auto px-6 text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-red-600 mx-auto"></div>
           <p className="text-gray-600 mt-4 text-lg">Loading payment details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If no designs to purchase, show error
+  if (!isCartPurchase && !design) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-red-50 to-gray-100 py-20">
+        <div className="container mx-auto px-6 text-center">
+          <div className="text-red-600 text-6xl mb-4">⚠️</div>
+          <h1 className="text-3xl font-bold text-gray-800 mb-4">No Items to Purchase</h1>
+          <p className="text-gray-600 mb-6">
+            It looks like there are no items in your cart or the design you're trying to purchase doesn't exist.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={() => navigate("/designs")}
+              className="bg-red-600 text-white px-8 py-3 rounded-2xl font-semibold hover:bg-red-700 transition-all duration-300"
+            >
+              Browse Designs
+            </button>
+            <button
+              onClick={() => navigate("/cart")}
+              className="bg-gray-200 text-gray-800 px-8 py-3 rounded-2xl font-semibold hover:bg-gray-300 transition-all duration-300"
+            >
+              View Cart
+            </button>
+          </div>
         </div>
       </div>
     );
