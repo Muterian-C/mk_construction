@@ -20,7 +20,7 @@ const PaymentPage = () => {
   const { id } = useParams(); // For single design purchase
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, token } = useAuth();
   const { cartItems, clearCart } = useCart();
   
   const [design, setDesign] = useState(null);
@@ -121,7 +121,6 @@ const PaymentPage = () => {
       const paymentData = {
         payment_method: paymentMethod,
         amount: calculateTotal(),
-        currency: "KES",
         items: designs.map(item => ({
           design_id: item.id,
           title: item.title,
@@ -138,46 +137,31 @@ const PaymentPage = () => {
         paymentData.paypal_email = paypalEmail;
       }
 
-      // Simulate payment processing
-      const response = await processPayment(paymentData);
+      // Call the actual backend API
+      const response = await axios.post("/api/payments/process", paymentData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
 
-      if (response.success) {
+      if (response.data.success) {
         setSuccess(true);
-        setOrderDetails(response.order);
+        setOrderDetails(response.data.order);
         
         // Clear cart if this was a cart purchase
         if (isCartPurchase) {
           clearCart();
         }
       } else {
-        setErrors({ payment: response.message || "Payment failed. Please try again." });
+        setErrors({ payment: response.data.error || "Payment failed. Please try again." });
       }
     } catch (error) {
       console.error("Payment error:", error);
-      setErrors({ payment: "Payment processing failed. Please try again." });
+      const errorMessage = error.response?.data?.error || "Payment processing failed. Please try again.";
+      setErrors({ payment: errorMessage });
     } finally {
       setProcessing(false);
     }
-  };
-
-  const processPayment = async (paymentData) => {
-    // Simulate API call - replace with your actual payment gateway integration
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          success: true,
-          order: {
-            id: `ORD-${Date.now()}`,
-            transaction_id: `TXN-${Date.now()}`,
-            amount: paymentData.amount,
-            payment_method: paymentData.payment_method,
-            timestamp: new Date().toISOString(),
-            items: paymentData.items
-          },
-          message: "Payment completed successfully"
-        });
-      }, 3000);
-    });
   };
 
   const paymentMethods = [

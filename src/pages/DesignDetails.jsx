@@ -4,6 +4,8 @@ import { useParams, Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import api from "../api/axios";
+import { useNavigate } from "react-router-dom";
+
 import {
   FaArrowLeft,
   FaShoppingCart,
@@ -31,6 +33,7 @@ export default function DesignDetails() {
   const [selectedPreviewIndex, setSelectedPreviewIndex] = useState(0);
   const { addToCart } = useCart();
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDesign = async () => {
@@ -60,15 +63,15 @@ export default function DesignDetails() {
   };
 
   const handleBuyNow = async () => {
-  if (design) {
-    try {
-      // Instead of adding to cart and redirecting, go directly to payment with design ID
-      window.location.href = `/checkout?design_id=${design.id}`;
-    } catch (error) {
-      alert("Failed to process purchase. Please try again.");
+    if (design) {
+      try {
+        // Use React Router navigation to go directly to payment with design ID
+        navigate(`/checkout/${design.id}`);
+      } catch (error) {
+        alert("Failed to process purchase. Please try again.");
+      }
     }
-  }
-};
+  };
 
   // Get all media items (images + video)
   const getMediaItems = () => {
@@ -209,9 +212,9 @@ export default function DesignDetails() {
                         <source src={mediaItems[selectedPreviewIndex].url} type="video/mp4" />
                         Your browser does not support the video tag.
                       </video>
-                      
+
                       {/* Play button overlay that disappears on hover */}
-                      <div 
+                      <div
                         className="absolute inset-0 flex items-center justify-center transition-opacity duration-300 hover:opacity-0"
                         style={{ pointerEvents: 'none' }}
                       >
