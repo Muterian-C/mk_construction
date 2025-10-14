@@ -1,9 +1,11 @@
 import { useCart } from "../context/CartContext";
 import { Link } from "react-router-dom";
 import { FaShoppingCart, FaTrash, FaArrowLeft, FaCreditCard, FaEye } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 export default function CartPage() {
   const { cart, loading, removeFromCart } = useCart();
+  const navigate = useNavigate(); // ADD THIS LINE
 
   if (loading) {
     return (
@@ -22,7 +24,7 @@ export default function CartPage() {
         {/* Hero Section */}
         <section className="relative bg-gradient-to-r from-gray-900 via-black to-red-800 text-white py-16 lg:py-20">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22%23ffffff%22 fill-opacity=%220.05%22%3E%3Ccircle cx=%2230%22 cy=%2230%22 r=%222%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
-          
+
           <div className="container relative mx-auto px-6 text-center">
             <h1 className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
               Your <span className="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">Cart</span>
@@ -49,8 +51,8 @@ export default function CartPage() {
               </div>
               <h2 className="text-3xl font-bold text-gray-800 mb-4">Your cart is empty</h2>
               <p className="text-gray-600 mb-8 text-lg">Start shopping to add premium architectural designs to your cart</p>
-              <Link 
-                to="/designs" 
+              <Link
+                to="/designs"
                 className="group/btn inline-flex items-center bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white py-4 px-8 rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-red-400/25"
               >
                 <FaEye className="mr-2" />
@@ -71,7 +73,7 @@ export default function CartPage() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-gray-900 via-black to-red-800 text-white py-16 lg:py-20">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22%23ffffff%22 fill-opacity=%220.05%22%3E%3Ccircle cx=%2230%22 cy=%2230%22 r=%222%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
-        
+
         <div className="container relative mx-auto px-6 text-center">
           <h1 className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
             Your <span className="bg-gradient-to-r from-red-500 to-red-600 bg-clip-text text-transparent">Cart</span>
@@ -124,7 +126,7 @@ export default function CartPage() {
                           />
                           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 rounded-2xl"></div>
                         </Link>
-                        
+
                         {/* Design Info */}
                         <div className="flex-1 min-w-0">
                           <Link
@@ -135,11 +137,11 @@ export default function CartPage() {
                               {item.title}
                             </h3>
                           </Link>
-                          
+
                           <p className="text-gray-600 text-sm mb-4 line-clamp-2">
                             {item.description || "Premium architectural design available for instant download."}
                           </p>
-                          
+
                           <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
                             <span className="bg-gray-100 px-3 py-1 rounded-full font-medium">
                               {item.category || "Architectural"}
@@ -151,7 +153,7 @@ export default function CartPage() {
                             <span className="text-2xl font-bold text-red-600">
                               KES {item.price.toLocaleString()}
                             </span>
-                            
+
                             <button
                               onClick={() => removeFromCart(item.id)}
                               className="group/remove flex items-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 px-4 py-2 rounded-2xl font-medium transition-all duration-300"
@@ -169,8 +171,8 @@ export default function CartPage() {
               </div>
 
               {/* Continue Shopping */}
-              <Link 
-                to="/designs" 
+              <Link
+                to="/designs"
                 className="group/continue w-full bg-white hover:bg-gray-50 text-gray-800 py-4 px-6 rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg border border-gray-200 flex items-center justify-center gap-2"
               >
                 <FaArrowLeft className="group-hover/continue:-translate-x-1 transition-transform" />
@@ -210,12 +212,14 @@ export default function CartPage() {
                   </div>
 
                   {/* Checkout Button */}
-                  <button className="group/checkout w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white py-4 px-6 rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-red-400/25 flex items-center justify-center gap-2">
+                  <button
+                    onClick={() => navigate('/checkout/cart')} // ADD THIS onClick
+                    className="group/checkout w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white py-4 px-6 rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-red-400/25 flex items-center justify-center gap-2"
+                  >
                     <FaCreditCard />
                     Proceed to Checkout
                     <span className="group-hover/checkout:translate-x-1 transition-transform duration-300">→</span>
                   </button>
-
                   {/* Security Notice */}
                   <div className="mt-4 text-center">
                     <p className="text-xs text-gray-500">

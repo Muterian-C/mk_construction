@@ -40,7 +40,7 @@ const PaymentPage = () => {
   const [orderDetails, setOrderDetails] = useState(null);
 
   // Check if it's cart purchase or single design purchase
-  const isCartPurchase = location.pathname.includes('cart');
+  const isCartPurchase = location.pathname.includes('/checkout/cart');
   const designs = isCartPurchase ? cartItems : (design ? [design] : []);
 
   useEffect(() => {
