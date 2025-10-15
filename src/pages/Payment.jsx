@@ -196,14 +196,14 @@ const PaymentPage = () => {
 
   if (loading && !design) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-red-900 to-black flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-800 flex items-center justify-center">
         <div className="text-center">
           <div className="relative">
-            <div className="w-20 h-20 bg-gradient-to-r from-red-500 to-red-700 rounded-full animate-pulse mx-auto mb-6"></div>
-            <div className="absolute inset-0 border-4 border-red-200/30 rounded-full animate-spin"></div>
+            <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-pulse mx-auto mb-6"></div>
+            <div className="absolute inset-0 border-4 border-purple-200/30 rounded-full animate-spin"></div>
           </div>
           <h3 className="text-white text-xl font-semibold mb-2">Preparing Your Checkout</h3>
-          <p className="text-red-200">Securing your payment experience...</p>
+          <p className="text-purple-200">Securing your payment experience...</p>
         </div>
       </div>
     );
@@ -211,14 +211,14 @@ const PaymentPage = () => {
 
   if (!isCartPurchase && !design) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-red-900 to-black flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-800 flex items-center justify-center">
         <div className="container mx-auto px-6 max-w-2xl">
           <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-12 text-center border border-white/20 shadow-2xl">
-            <div className="w-32 h-32 bg-gradient-to-br from-red-500/20 to-red-700/20 rounded-full flex items-center justify-center mx-auto mb-8 border border-white/10">
+            <div className="w-32 h-32 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full flex items-center justify-center mx-auto mb-8 border border-white/10">
               <span className="text-6xl">🎨</span>
             </div>
             <h1 className="text-4xl font-bold text-white mb-4">Design Not Found</h1>
-            <p className="text-red-200 text-lg mb-8 max-w-md mx-auto">
+            <p className="text-purple-200 text-lg mb-8 max-w-md mx-auto">
               The design you're looking for is no longer available or doesn't exist.
             </p>
             {errors.fetch && (
@@ -229,7 +229,7 @@ const PaymentPage = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={() => navigate("/designs")}
-                className="bg-gradient-to-r from-red-500 to-red-700 text-white px-8 py-4 rounded-2xl font-semibold hover:shadow-2xl hover:shadow-red-500/25 transition-all duration-300 transform hover:scale-105"
+                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-2xl font-semibold hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105"
               >
                 Explore Designs
               </button>
@@ -248,7 +248,7 @@ const PaymentPage = () => {
 
   if (success && orderDetails) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-red-900 to-black flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-800 flex items-center justify-center p-4">
         <div className="container mx-auto max-w-2xl">
           <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-10 border border-white/20 shadow-2xl">
             {/* Animated Success Icon */}
@@ -267,30 +267,30 @@ const PaymentPage = () => {
             {/* Order Details Card */}
             <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-8 mb-8 border border-white/10">
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-700 rounded-xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
                   <FaReceipt className="text-white text-xl" />
                 </div>
                 <div>
                   <h3 className="font-bold text-white text-xl">Order Confirmed</h3>
-                  <p className="text-red-200">Thank you for your purchase</p>
+                  <p className="text-purple-200">Thank you for your purchase</p>
                 </div>
               </div>
               
               <div className="space-y-4">
                 <div className="flex justify-between items-center py-3 border-b border-white/10">
-                  <span className="text-red-200">Order ID</span>
+                  <span className="text-purple-200">Order ID</span>
                   <span className="font-mono text-white font-semibold">{orderDetails.id}</span>
                 </div>
                 <div className="flex justify-between items-center py-3 border-b border-white/10">
-                  <span className="text-red-200">Transaction</span>
+                  <span className="text-purple-200">Transaction</span>
                   <span className="font-mono text-white text-sm">{orderDetails.transaction_id}</span>
                 </div>
                 <div className="flex justify-between items-center py-3 border-b border-white/10 bg-gradient-to-r from-green-500/10 to-emerald-500/10 -mx-4 px-4">
-                  <span className="text-red-200">Amount Paid</span>
+                  <span className="text-purple-200">Amount Paid</span>
                   <span className="font-bold text-emerald-400 text-xl">KES {orderDetails.amount.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between items-center py-3">
-                  <span className="text-red-200">Payment Method</span>
+                  <span className="text-purple-200">Payment Method</span>
                   <span className="text-white font-semibold capitalize bg-white/10 px-3 py-1 rounded-full">
                     {orderDetails.payment_method}
                   </span>
@@ -302,7 +302,7 @@ const PaymentPage = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={() => navigate("/dashboard")}
-                className="flex-1 bg-gradient-to-r from-red-500 to-red-700 text-white px-6 py-4 rounded-2xl font-semibold hover:shadow-2xl hover:shadow-red-500/25 transition-all duration-300 transform hover:scale-105"
+                className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-4 rounded-2xl font-semibold hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 transform hover:scale-105"
               >
                 Go to Dashboard
               </button>
@@ -320,9 +320,9 @@ const PaymentPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-red-900 to-black">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-800">
       {/* Background Pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-900/20 via-gray-900 to-gray-900"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/20 via-slate-900 to-slate-900"></div>
       
       <div className="relative z-10 py-12">
         <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
@@ -334,7 +334,7 @@ const PaymentPage = () => {
                 <div className="mb-8">
                   <button
                     onClick={() => navigate(-1)}
-                    className="inline-flex items-center gap-3 text-red-200 hover:text-white transition-all duration-300 font-medium mb-6 group"
+                    className="inline-flex items-center gap-3 text-purple-200 hover:text-white transition-all duration-300 font-medium mb-6 group"
                   >
                     <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-all">
                       <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" />
@@ -343,12 +343,12 @@ const PaymentPage = () => {
                   </button>
                   
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-700 rounded-2xl flex items-center justify-center shadow-lg">
+                    <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
                       <FaLock className="text-white text-xl" />
                     </div>
                     <div>
                       <h1 className="text-3xl sm:text-4xl font-bold text-white mb-1">Secure Checkout</h1>
-                      <p className="text-red-200">Complete your purchase with confidence</p>
+                      <p className="text-purple-200">Complete your purchase with confidence</p>
                     </div>
                   </div>
                 </div>
@@ -363,18 +363,18 @@ const PaymentPage = () => {
                         onClick={() => setPaymentMethod(method.id)}
                         className={`relative p-5 rounded-2xl transition-all duration-500 text-left group overflow-hidden ${
                           paymentMethod === method.id
-                            ? "bg-gradient-to-br from-white/20 to-white/10 border-2 border-white/30 shadow-2xl shadow-red-500/25 transform scale-105"
+                            ? "bg-gradient-to-br from-white/20 to-white/10 border-2 border-white/30 shadow-2xl shadow-purple-500/25 transform scale-105"
                             : "bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 hover:shadow-lg"
                         }`}
                       >
                         {/* Background Glow */}
                         {paymentMethod === method.id && (
-                          <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-red-700/10 animate-pulse"></div>
+                          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 animate-pulse"></div>
                         )}
                         
                         {/* Badge */}
                         {method.badge && (
-                          <span className="absolute -top-2 left-4 bg-gradient-to-r from-red-500 to-red-700 text-white text-xs px-3 py-1 rounded-full font-semibold shadow-lg">
+                          <span className="absolute -top-2 left-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-3 py-1 rounded-full font-semibold shadow-lg">
                             {method.badge}
                           </span>
                         )}
@@ -392,12 +392,12 @@ const PaymentPage = () => {
                           </div>
                           
                           <div className="font-bold text-white text-lg mb-2">{method.name}</div>
-                          <div className="text-red-200 text-sm mb-3">{method.description}</div>
+                          <div className="text-purple-200 text-sm mb-3">{method.description}</div>
                           
                           {/* Features */}
                           <div className="flex flex-wrap gap-1">
                             {method.features.map((feature, idx) => (
-                              <span key={idx} className="text-xs bg-white/10 text-red-200 px-2 py-1 rounded-full">
+                              <span key={idx} className="text-xs bg-white/10 text-purple-200 px-2 py-1 rounded-full">
                                 {feature}
                               </span>
                             ))}
@@ -432,7 +432,7 @@ const PaymentPage = () => {
                           value={phoneNumber}
                           onChange={(e) => setPhoneNumber(e.target.value)}
                           placeholder="0712 345 678 or +254712345678"
-                          className={`w-full px-4 py-4 bg-white/5 border-2 rounded-2xl text-white placeholder-red-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
+                          className={`w-full px-4 py-4 bg-white/5 border-2 rounded-2xl text-white placeholder-purple-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
                             errors.phoneNumber ? "border-red-400 bg-red-500/10" : "border-white/10 focus:border-green-400"
                           }`}
                         />
@@ -475,7 +475,7 @@ const PaymentPage = () => {
                             value={cardDetails.name}
                             onChange={(e) => setCardDetails(prev => ({ ...prev, name: e.target.value }))}
                             placeholder="John Doe"
-                            className={`w-full px-4 py-4 bg-white/5 border-2 rounded-2xl text-white placeholder-red-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                            className={`w-full px-4 py-4 bg-white/5 border-2 rounded-2xl text-white placeholder-purple-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                               errors.cardName ? "border-red-400 bg-red-500/10" : "border-white/10 focus:border-blue-400"
                             }`}
                           />
@@ -492,7 +492,7 @@ const PaymentPage = () => {
                             onChange={(e) => setCardDetails(prev => ({ ...prev, number: e.target.value }))}
                             placeholder="1234 5678 9012 3456"
                             maxLength={19}
-                            className={`w-full px-4 py-4 bg-white/5 border-2 rounded-2xl text-white placeholder-red-300 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                            className={`w-full px-4 py-4 bg-white/5 border-2 rounded-2xl text-white placeholder-purple-300 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                               errors.cardNumber ? "border-red-400 bg-red-500/10" : "border-white/10 focus:border-blue-400"
                             }`}
                           />
@@ -510,7 +510,7 @@ const PaymentPage = () => {
                               onChange={(e) => setCardDetails(prev => ({ ...prev, expiry: e.target.value }))}
                               placeholder="MM/YY"
                               maxLength={5}
-                              className={`w-full px-4 py-4 bg-white/5 border-2 rounded-2xl text-white placeholder-red-300 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                              className={`w-full px-4 py-4 bg-white/5 border-2 rounded-2xl text-white placeholder-purple-300 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                                 errors.cardExpiry ? "border-red-400 bg-red-500/10" : "border-white/10 focus:border-blue-400"
                               }`}
                             />
@@ -527,7 +527,7 @@ const PaymentPage = () => {
                               onChange={(e) => setCardDetails(prev => ({ ...prev, cvv: e.target.value }))}
                               placeholder="123"
                               maxLength={4}
-                              className={`w-full px-4 py-4 bg-white/5 border-2 rounded-2xl text-white placeholder-red-300 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                              className={`w-full px-4 py-4 bg-white/5 border-2 rounded-2xl text-white placeholder-purple-300 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
                                 errors.cardCvv ? "border-red-400 bg-red-500/10" : "border-white/10 focus:border-blue-400"
                               }`}
                             />
@@ -560,7 +560,7 @@ const PaymentPage = () => {
                           value={paypalEmail}
                           onChange={(e) => setPaypalEmail(e.target.value)}
                           placeholder="your-email@example.com"
-                          className={`w-full px-4 py-4 bg-white/5 border-2 rounded-2xl text-white placeholder-red-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all ${
+                          className={`w-full px-4 py-4 bg-white/5 border-2 rounded-2xl text-white placeholder-purple-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all ${
                             errors.paypalEmail ? "border-red-400 bg-red-500/10" : "border-white/10 focus:border-cyan-400"
                           }`}
                         />
@@ -577,14 +577,14 @@ const PaymentPage = () => {
                   )}
 
                   {/* Security Assurance */}
-                  <div className="bg-gradient-to-r from-red-500/10 to-red-700/10 rounded-2xl p-6 border border-red-400/20">
+                  <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-2xl p-6 border border-purple-400/20">
                     <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 bg-gradient-to-r from-red-500 to-red-700 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
+                      <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
                         <FaShieldAlt className="text-white text-xl" />
                       </div>
                       <div>
                         <h4 className="font-bold text-white text-lg mb-2">Bank-Level Security</h4>
-                        <p className="text-red-200 text-sm">
+                        <p className="text-purple-200 text-sm">
                           Your payment is protected with 256-bit SSL encryption. We never store your sensitive card details. 
                           All transactions are processed through PCI-DSS compliant payment processors.
                         </p>
@@ -611,10 +611,10 @@ const PaymentPage = () => {
                   <button
                     type="submit"
                     disabled={processing}
-                    className="w-full bg-gradient-to-r from-red-500 to-red-700 text-white py-5 px-8 rounded-2xl font-bold text-lg hover:shadow-2xl hover:shadow-red-500/25 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:shadow-none flex items-center justify-center gap-4 group relative overflow-hidden"
+                    className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-5 px-8 rounded-2xl font-bold text-lg hover:shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:shadow-none flex items-center justify-center gap-4 group relative overflow-hidden"
                   >
                     {/* Animated Background */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-red-600 to-red-800 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     
                     {processing ? (
                       <>
@@ -629,7 +629,7 @@ const PaymentPage = () => {
                     )}
                   </button>
 
-                  <p className="text-center text-red-300 text-sm">
+                  <p className="text-center text-purple-300 text-sm">
                     By completing this purchase, you agree to our Terms of Service and Privacy Policy
                   </p>
                 </form>
@@ -654,8 +654,8 @@ const PaymentPage = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-white text-sm line-clamp-1">{item.title}</h3>
-                        <p className="text-red-300 text-xs capitalize mb-1">{item.category}</p>
-                        <p className="text-red-400 font-bold text-sm">KES {item.price?.toLocaleString()}</p>
+                        <p className="text-purple-300 text-xs capitalize mb-1">{item.category}</p>
+                        <p className="text-pink-400 font-bold text-sm">KES {item.price?.toLocaleString()}</p>
                       </div>
                     </div>
                   ))}
@@ -663,21 +663,21 @@ const PaymentPage = () => {
 
                 {/* Price Breakdown */}
                 <div className="space-y-3 border-t-2 border-white/10 pt-4 mb-6">
-                  <div className="flex justify-between text-red-200">
+                  <div className="flex justify-between text-purple-200">
                     <span>Subtotal</span>
                     <span className="font-semibold">KES {calculateTotal().toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-red-200">
+                  <div className="flex justify-between text-purple-200">
                     <span>Service Fee</span>
                     <span className="font-semibold text-green-400">FREE</span>
                   </div>
-                  <div className="flex justify-between text-red-200">
+                  <div className="flex justify-between text-purple-200">
                     <span>Tax (VAT)</span>
                     <span className="font-semibold">Included</span>
                   </div>
                   <div className="flex justify-between text-xl font-bold text-white border-t-2 border-white/10 pt-4">
                     <span>Total</span>
-                    <span className="text-red-400">KES {calculateTotal().toLocaleString()}</span>
+                    <span className="text-pink-400">KES {calculateTotal().toLocaleString()}</span>
                   </div>
                 </div>
 
@@ -692,17 +692,17 @@ const PaymentPage = () => {
                     <div className="p-3 bg-white/5 rounded-xl border border-white/10">
                       <FaAward className="text-yellow-400 mx-auto mb-1" />
                       <div className="font-semibold text-white text-xs">Quality</div>
-                      <div className="text-red-300 text-xs">Guaranteed</div>
+                      <div className="text-purple-300 text-xs">Guaranteed</div>
                     </div>
                     <div className="p-3 bg-white/5 rounded-xl border border-white/10">
                       <FaDownload className="text-green-400 mx-auto mb-1" />
                       <div className="font-semibold text-white text-xs">Instant</div>
-                      <div className="text-red-300 text-xs">Download</div>
+                      <div className="text-purple-300 text-xs">Download</div>
                     </div>
                     <div className="p-3 bg-white/5 rounded-xl border border-white/10">
                       <FaHeadset className="text-blue-400 mx-auto mb-1" />
                       <div className="font-semibold text-white text-xs">24/7</div>
-                      <div className="text-red-300 text-xs">Support</div>
+                      <div className="text-purple-300 text-xs">Support</div>
                     </div>
                   </div>
                 </div>
