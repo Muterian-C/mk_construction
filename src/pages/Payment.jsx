@@ -1,4 +1,3 @@
-// src/pages/PaymentPage.jsx
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -13,11 +12,12 @@ import {
   FaArrowLeft,
   FaShieldAlt,
   FaSyncAlt,
-  FaReceipt
+  FaReceipt,
+  FaCheck
 } from "react-icons/fa";
 
 const PaymentPage = () => {
-  const { id } = useParams(); // For single design purchase
+  const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isAuthenticated, token } = useAuth();
@@ -39,66 +39,33 @@ const PaymentPage = () => {
   const [success, setSuccess] = useState(false);
   const [orderDetails, setOrderDetails] = useState(null);
 
-  // Check if it's cart purchase or single design purchase
   const isCartPurchase = location.pathname.includes('/checkout/cart');
   const designs = isCartPurchase ? cartItems : (design ? [design] : []);
 
   useEffect(() => {
-    console.log("🎯 PAYMENT PAGE MOUNTED - DEBUG INFO:");
-    console.log("📍 Current path:", location.pathname);
-    console.log("🎨 Design ID from URL:", id);
-    console.log("🔐 isAuthenticated:", isAuthenticated);
-    console.log("🛒 isCartPurchase:", location.pathname.includes('/checkout/cart'));
-    console.log("📦 cartItems count:", cartItems?.length || 0);
-
     if (!isAuthenticated) {
-      console.log("🚫 Not authenticated - redirecting to login");
       setLoading(false);
       navigate("/login", { state: { from: location.pathname } });
       return;
     }
 
     if (location.pathname.includes('/checkout/cart')) {
-      console.log("🛒 Cart purchase detected - using cart items");
-      console.log("📦 Cart items:", cartItems);
       setLoading(false);
     } else if (id) {
-      console.log("🎨 Single design purchase - fetching design ID:", id);
       fetchDesignDetails();
     } else {
-      console.log("❌ No design ID and not cart purchase - showing error state");
       setLoading(false);
-      // REMOVED REDIRECTION - just set loading to false
     }
   }, [id, isAuthenticated, navigate, location, cartItems]);
 
-  // TEMPORARY: Add this to see if component renders when design loads
-  useEffect(() => {
-    if (design) {
-      console.log("🎉 DESIGN IS LOADED - Component should render payment form");
-      console.log("Design data:", design);
-    }
-  }, [design]);
-
   const fetchDesignDetails = async () => {
     try {
-      console.log("🔄 Starting API call to fetch design:", id);
       const response = await axios.get(`/api/designs/${id}`);
-      console.log("✅ API call successful - design data received");
-      console.log("Design title:", response.data.title);
-      console.log("Design price:", response.data.price);
       setDesign(response.data);
-      console.log("✅ Design set in state, setting loading to false");
       setLoading(false);
     } catch (error) {
-      console.error("❌ Error fetching design:", error);
-      console.log("📊 Error details:", {
-        message: error.message,
-        status: error.response?.status,
-        data: error.response?.data
-      });
+      console.error("Error fetching design:", error);
       setLoading(false);
-      // REMOVED REDIRECTION - just set error state
       setErrors({ fetch: `Failed to load design: ${error.response?.data?.error || error.message}` });
     }
   };
@@ -122,7 +89,6 @@ const PaymentPage = () => {
       if (!cardDetails.cvv.trim()) newErrors.cardCvv = "CVV is required";
       if (!cardDetails.name.trim()) newErrors.cardName = "Cardholder name is required";
 
-      // Basic card validation
       if (cardDetails.number && !/^\d{16}$/.test(cardDetails.number.replace(/\s/g, ''))) {
         newErrors.cardNumber = "Please enter a valid 16-digit card number";
       }
@@ -160,7 +126,6 @@ const PaymentPage = () => {
         }))
       };
 
-      // Add payment method specific data
       if (paymentMethod === "mpesa") {
         paymentData.phone_number = phoneNumber;
       } else if (paymentMethod === "card") {
@@ -169,7 +134,6 @@ const PaymentPage = () => {
         paymentData.paypal_email = paypalEmail;
       }
 
-      // Call the actual backend API
       const response = await axios.post("/api/payments/process", paymentData, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -180,7 +144,6 @@ const PaymentPage = () => {
         setSuccess(true);
         setOrderDetails(response.data.order);
 
-        // Clear cart if this was a cart purchase
         if (isCartPurchase) {
           clearCart();
         }
@@ -201,15 +164,15 @@ const PaymentPage = () => {
       id: "mpesa",
       name: "M-Pesa",
       icon: FaMobile,
-      description: "Pay via M-Pesa. You'll receive a prompt on your phone.",
+      description: "Instant payment via M-Pesa",
       color: "from-green-500 to-emerald-600",
       popular: true
     },
     {
       id: "card",
-      name: "Credit/Debit Card",
+      name: "Card",
       icon: FaCreditCard,
-      description: "Pay securely with your Visa, MasterCard, or American Express.",
+      description: "Visa, MasterCard, Amex",
       color: "from-blue-500 to-indigo-600",
       popular: false
     },
@@ -217,53 +180,57 @@ const PaymentPage = () => {
       id: "paypal",
       name: "PayPal",
       icon: FaPaypal,
-      description: "Pay with your PayPal account or credit card through PayPal.",
+      description: "Secure PayPal checkout",
       color: "from-blue-400 to-cyan-500",
       popular: false
     }
   ];
 
-  // TEMPORARY: Modified loading check to see what's happening
   if (loading && !design) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-red-50 to-gray-100 py-20">
-        <div className="container mx-auto px-6 text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-red-600 mx-auto"></div>
-          <p className="text-gray-600 mt-4 text-lg">Loading payment details...</p>
-          <p className="text-sm text-gray-500 mt-2">Debug: loading={loading.toString()}, design={design ? "loaded" : "null"}</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-red-50/30 to-slate-100 flex items-center justify-center py-20">
+        <div className="text-center">
+          <div className="relative w-20 h-20 mx-auto mb-6">
+            <div className="absolute inset-0 rounded-full border-4 border-red-100"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-t-red-600 animate-spin"></div>
+          </div>
+          <p className="text-gray-600 text-lg font-medium">Loading payment details...</p>
         </div>
       </div>
     );
   }
 
-  // If no designs to purchase, show error (NO REDIRECTION)
   if (!isCartPurchase && !design) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-red-50 to-gray-100 py-20">
-        <div className="container mx-auto px-6 text-center">
-          <div className="text-red-600 text-6xl mb-4">⚠️</div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-4">No Items to Purchase</h1>
-          <p className="text-gray-600 mb-6">
-            It looks like there are no items in your cart or the design you're trying to purchase doesn't exist.
-          </p>
-          {errors.fetch && (
-            <div className="bg-red-50 rounded-2xl p-4 border border-red-200 mb-4 max-w-md mx-auto">
-              <p className="text-red-700 text-sm">{errors.fetch}</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-red-50/30 to-slate-100 flex items-center justify-center py-20">
+        <div className="container mx-auto px-6 max-w-2xl">
+          <div className="bg-white rounded-3xl shadow-xl p-12 text-center border border-gray-100">
+            <div className="w-24 h-24 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <span className="text-5xl">🛒</span>
             </div>
-          )}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              onClick={() => navigate("/designs")}
-              className="bg-red-600 text-white px-8 py-3 rounded-2xl font-semibold hover:bg-red-700 transition-all duration-300"
-            >
-              Browse Designs
-            </button>
-            <button
-              onClick={() => navigate("/cart")}
-              className="bg-gray-200 text-gray-800 px-8 py-3 rounded-2xl font-semibold hover:bg-gray-300 transition-all duration-300"
-            >
-              View Cart
-            </button>
+            <h1 className="text-3xl font-bold text-gray-900 mb-3">No Items to Purchase</h1>
+            <p className="text-gray-600 mb-8 max-w-md mx-auto">
+              Your cart is empty or the design you're looking for doesn't exist.
+            </p>
+            {errors.fetch && (
+              <div className="bg-red-50 rounded-2xl p-4 border border-red-100 mb-6 max-w-md mx-auto">
+                <p className="text-red-700 text-sm">{errors.fetch}</p>
+              </div>
+            )}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                onClick={() => navigate("/designs")}
+                className="bg-gradient-to-r from-red-600 to-red-700 text-white px-8 py-3.5 rounded-xl font-semibold hover:shadow-lg hover:shadow-red-500/25 transition-all duration-300"
+              >
+                Browse Designs
+              </button>
+              <button
+                onClick={() => navigate("/cart")}
+                className="bg-gray-100 text-gray-700 px-8 py-3.5 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-300"
+              >
+                View Cart
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -272,53 +239,55 @@ const PaymentPage = () => {
 
   if (success && orderDetails) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-red-50 to-gray-100 py-12">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50/30 to-slate-100 flex items-center justify-center py-12">
         <div className="container mx-auto px-6 max-w-2xl">
-          <div className="bg-white rounded-3xl shadow-2xl p-8 border border-green-200 text-center">
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <FaCheckCircle className="text-green-600 text-4xl" />
+          <div className="bg-white rounded-3xl shadow-2xl p-10 border border-green-100">
+            <div className="w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green-500/25">
+              <FaCheckCircle className="text-white text-5xl" />
             </div>
 
-            <h1 className="text-3xl font-bold text-gray-800 mb-4">Payment Successful!</h1>
-            <p className="text-gray-600 mb-6">
-              Thank you for your purchase. Your design files are now available for download.
+            <h1 className="text-3xl font-bold text-gray-900 mb-3 text-center">Payment Successful!</h1>
+            <p className="text-gray-600 mb-8 text-center max-w-md mx-auto">
+              Your design files are ready for download in your dashboard.
             </p>
 
-            <div className="bg-gray-50 rounded-2xl p-6 mb-6 text-left">
-              <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <FaReceipt className="text-red-600" />
-                Order Details
-              </h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Order ID:</span>
-                  <span className="font-semibold">{orderDetails.id}</span>
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-2xl p-6 mb-8 border border-gray-200">
+              <div className="flex items-center gap-3 mb-5 pb-4 border-b border-gray-200">
+                <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                  <FaReceipt className="text-red-600 text-lg" />
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Transaction ID:</span>
-                  <span className="font-semibold">{orderDetails.transaction_id}</span>
+                <h3 className="font-semibold text-gray-900 text-lg">Order Details</h3>
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-gray-600 text-sm">Order ID</span>
+                  <span className="font-semibold text-gray-900">{orderDetails.id}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Amount Paid:</span>
-                  <span className="font-semibold text-green-600">KES {orderDetails.amount.toLocaleString()}</span>
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-gray-600 text-sm">Transaction ID</span>
+                  <span className="font-semibold text-gray-900 font-mono text-xs">{orderDetails.transaction_id}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Payment Method:</span>
-                  <span className="font-semibold capitalize">{orderDetails.payment_method}</span>
+                <div className="flex justify-between items-center py-2 bg-green-50 -mx-3 px-3 rounded-lg">
+                  <span className="text-gray-600 text-sm">Amount Paid</span>
+                  <span className="font-bold text-green-600 text-lg">KES {orderDetails.amount.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-gray-600 text-sm">Payment Method</span>
+                  <span className="font-semibold text-gray-900 capitalize">{orderDetails.payment_method}</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3">
               <button
                 onClick={() => navigate("/dashboard")}
-                className="bg-red-600 text-white px-8 py-3 rounded-2xl font-semibold hover:bg-red-700 transition-all duration-300"
+                className="flex-1 bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3.5 rounded-xl font-semibold hover:shadow-lg hover:shadow-red-500/25 transition-all duration-300"
               >
                 Go to Dashboard
               </button>
               <button
                 onClick={() => navigate("/designs")}
-                className="bg-gray-200 text-gray-800 px-8 py-3 rounded-2xl font-semibold hover:bg-gray-300 transition-all duration-300"
+                className="flex-1 bg-gray-100 text-gray-700 px-6 py-3.5 rounded-xl font-semibold hover:bg-gray-200 transition-all duration-300"
               >
                 Continue Shopping
               </button>
@@ -329,67 +298,56 @@ const PaymentPage = () => {
     );
   }
 
-  console.log("🎉 RENDERING PAYMENT FORM - FINAL STATE:");
-  console.log("loading:", loading);
-  console.log("design:", design);
-  console.log("isCartPurchase:", isCartPurchase);
-  console.log("designs count:", designs.length);
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-red-50 to-gray-100 py-8">
-      <div className="container mx-auto px-6 max-w-6xl">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-red-50/30 to-slate-100 py-12">
+      <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Payment Form */}
           <div className="lg:w-2/3">
-            <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-200">
+            <div className="bg-white rounded-3xl shadow-xl p-6 sm:p-8 border border-gray-100">
               {/* Header */}
-              <div className="flex items-center justify-between mb-8">
+              <div className="mb-8">
                 <button
                   onClick={() => navigate(-1)}
-                  className="flex items-center gap-2 text-gray-600 hover:text-red-600 transition-colors font-semibold"
+                  className="inline-flex items-center gap-2 text-gray-600 hover:text-red-600 transition-colors font-medium mb-6 group"
                 >
-                  <FaArrowLeft />
+                  <FaArrowLeft className="group-hover:-translate-x-1 transition-transform" />
                   Back
                 </button>
-                <h1 className="text-3xl font-bold text-gray-800">Complete Payment</h1>
-              </div>
-
-              {/* Debug Info - TEMPORARY */}
-              <div className="bg-blue-50 rounded-2xl p-4 mb-6 border border-blue-200">
-                <p className="text-blue-700 text-sm">
-                  <strong>Debug:</strong> Payment page loaded successfully! 
-                  {design && ` Design: ${design.title} - KES ${design.price}`}
-                </p>
+                <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Secure Checkout</h1>
+                <p className="text-gray-600">Complete your purchase safely and securely</p>
               </div>
 
               {/* Payment Methods */}
               <div className="mb-8">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">Select Payment Method</h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Payment Method</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {paymentMethods.map((method) => (
-                    <div
+                    <button
                       key={method.id}
                       onClick={() => setPaymentMethod(method.id)}
-                      className={`border-2 rounded-2xl p-4 cursor-pointer transition-all duration-300 ${paymentMethod === method.id
-                          ? `border-red-500 bg-red-50 ring-2 ring-red-200`
-                          : "border-gray-200 hover:border-gray-300"
-                        }`}
+                      className={`relative border-2 rounded-2xl p-4 transition-all duration-300 text-left ${
+                        paymentMethod === method.id
+                          ? "border-red-500 bg-gradient-to-br from-red-50 to-red-100/50 shadow-lg shadow-red-500/10"
+                          : "border-gray-200 hover:border-gray-300 bg-white hover:shadow-md"
+                      }`}
                     >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-3">
-                          <div className={`bg-gradient-to-r ${method.color} text-white p-2 rounded-xl`}>
-                            <method.icon className="text-lg" />
-                          </div>
-                          <span className="font-semibold text-gray-800">{method.name}</span>
+                      {paymentMethod === method.id && (
+                        <div className="absolute top-3 right-3 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                          <FaCheck className="text-white text-xs" />
                         </div>
-                        {method.popular && (
-                          <span className="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full">
-                            Popular
-                          </span>
-                        )}
+                      )}
+                      {method.popular && (
+                        <span className="absolute -top-2 left-4 bg-gradient-to-r from-red-600 to-red-700 text-white text-xs px-2.5 py-1 rounded-full font-semibold shadow-lg">
+                          Popular
+                        </span>
+                      )}
+                      <div className={`w-12 h-12 bg-gradient-to-r ${method.color} rounded-xl flex items-center justify-center mb-3 shadow-lg`}>
+                        <method.icon className="text-white text-xl" />
                       </div>
-                      <p className="text-sm text-gray-600">{method.description}</p>
-                    </div>
+                      <div className="font-semibold text-gray-900 mb-1">{method.name}</div>
+                      <div className="text-xs text-gray-600">{method.description}</div>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -398,61 +356,72 @@ const PaymentPage = () => {
               <form onSubmit={handlePayment} className="space-y-6">
                 {/* M-Pesa Payment */}
                 {paymentMethod === "mpesa" && (
-                  <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
-                    <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                      <FaMobile className="text-green-600" />
-                      M-Pesa Details
-                    </h3>
+                  <div className="bg-gradient-to-br from-green-50 to-emerald-50/50 rounded-2xl p-6 border border-green-200">
+                    <div className="flex items-center gap-3 mb-5">
+                      <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center shadow-lg shadow-green-500/25">
+                        <FaMobile className="text-white text-lg" />
+                      </div>
+                      <h3 className="font-semibold text-gray-900 text-lg">M-Pesa Payment</h3>
+                    </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Phone Number *
+                        Phone Number <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="tel"
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
-                        placeholder="e.g., 0712 345 678 or +254712345678"
-                        className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-green-500 ${errors.phoneNumber ? "border-red-500" : "border-gray-300"
-                          }`}
+                        placeholder="0712 345 678 or +254712345678"
+                        className={`w-full px-4 py-3.5 border-2 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all ${
+                          errors.phoneNumber ? "border-red-300 bg-red-50" : "border-gray-200"
+                        }`}
                       />
                       {errors.phoneNumber && (
-                        <p className="text-red-600 text-sm mt-1">{errors.phoneNumber}</p>
+                        <p className="text-red-600 text-sm mt-2 flex items-center gap-1">
+                          <span className="font-semibold">⚠</span> {errors.phoneNumber}
+                        </p>
                       )}
-                      <p className="text-sm text-gray-600 mt-2">
-                        You'll receive an M-Pesa prompt on this number to complete the payment.
-                      </p>
+                      <div className="mt-3 p-3 bg-white rounded-lg border border-green-200">
+                        <p className="text-sm text-gray-700 flex items-start gap-2">
+                          <span className="text-green-600 mt-0.5">ℹ</span>
+                          <span>You'll receive an M-Pesa prompt on this number to authorize the payment.</span>
+                        </p>
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {/* Card Payment */}
                 {paymentMethod === "card" && (
-                  <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
-                    <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                      <FaCreditCard className="text-blue-600" />
-                      Card Details
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="md:col-span-2">
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50/50 rounded-2xl p-6 border border-blue-200">
+                    <div className="flex items-center gap-3 mb-5">
+                      <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+                        <FaCreditCard className="text-white text-lg" />
+                      </div>
+                      <h3 className="font-semibold text-gray-900 text-lg">Card Information</h3>
+                    </div>
+                    <div className="space-y-4">
+                      <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Cardholder Name *
+                          Cardholder Name <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
                           value={cardDetails.name}
                           onChange={(e) => setCardDetails(prev => ({ ...prev, name: e.target.value }))}
-                          placeholder="Full name as shown on card"
-                          className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.cardName ? "border-red-500" : "border-gray-300"
-                            }`}
+                          placeholder="John Doe"
+                          className={`w-full px-4 py-3.5 border-2 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                            errors.cardName ? "border-red-300 bg-red-50" : "border-gray-200"
+                          }`}
                         />
                         {errors.cardName && (
-                          <p className="text-red-600 text-sm mt-1">{errors.cardName}</p>
+                          <p className="text-red-600 text-sm mt-2">⚠ {errors.cardName}</p>
                         )}
                       </div>
 
-                      <div className="md:col-span-2">
+                      <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Card Number *
+                          Card Number <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
@@ -460,48 +429,53 @@ const PaymentPage = () => {
                           onChange={(e) => setCardDetails(prev => ({ ...prev, number: e.target.value }))}
                           placeholder="1234 5678 9012 3456"
                           maxLength={19}
-                          className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.cardNumber ? "border-red-500" : "border-gray-300"
-                            }`}
+                          className={`w-full px-4 py-3.5 border-2 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-mono ${
+                            errors.cardNumber ? "border-red-300 bg-red-50" : "border-gray-200"
+                          }`}
                         />
                         {errors.cardNumber && (
-                          <p className="text-red-600 text-sm mt-1">{errors.cardNumber}</p>
+                          <p className="text-red-600 text-sm mt-2">⚠ {errors.cardNumber}</p>
                         )}
                       </div>
 
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Expiry Date *
-                        </label>
-                        <input
-                          type="text"
-                          value={cardDetails.expiry}
-                          onChange={(e) => setCardDetails(prev => ({ ...prev, expiry: e.target.value }))}
-                          placeholder="MM/YY"
-                          maxLength={5}
-                          className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.cardExpiry ? "border-red-500" : "border-gray-300"
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Expiry <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={cardDetails.expiry}
+                            onChange={(e) => setCardDetails(prev => ({ ...prev, expiry: e.target.value }))}
+                            placeholder="MM/YY"
+                            maxLength={5}
+                            className={`w-full px-4 py-3.5 border-2 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-mono ${
+                              errors.cardExpiry ? "border-red-300 bg-red-50" : "border-gray-200"
                             }`}
-                        />
-                        {errors.cardExpiry && (
-                          <p className="text-red-600 text-sm mt-1">{errors.cardExpiry}</p>
-                        )}
-                      </div>
+                          />
+                          {errors.cardExpiry && (
+                            <p className="text-red-600 text-sm mt-2">⚠ {errors.cardExpiry}</p>
+                          )}
+                        </div>
 
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          CVV *
-                        </label>
-                        <input
-                          type="text"
-                          value={cardDetails.cvv}
-                          onChange={(e) => setCardDetails(prev => ({ ...prev, cvv: e.target.value }))}
-                          placeholder="123"
-                          maxLength={4}
-                          className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.cardCvv ? "border-red-500" : "border-gray-300"
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            CVV <span className="text-red-500">*</span>
+                          </label>
+                          <input
+                            type="text"
+                            value={cardDetails.cvv}
+                            onChange={(e) => setCardDetails(prev => ({ ...prev, cvv: e.target.value }))}
+                            placeholder="123"
+                            maxLength={4}
+                            className={`w-full px-4 py-3.5 border-2 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-mono ${
+                              errors.cardCvv ? "border-red-300 bg-red-50" : "border-gray-200"
                             }`}
-                        />
-                        {errors.cardCvv && (
-                          <p className="text-red-600 text-sm mt-1">{errors.cardCvv}</p>
-                        )}
+                          />
+                          {errors.cardCvv && (
+                            <p className="text-red-600 text-sm mt-2">⚠ {errors.cardCvv}</p>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -509,119 +483,154 @@ const PaymentPage = () => {
 
                 {/* PayPal Payment */}
                 {paymentMethod === "paypal" && (
-                  <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
-                    <h3 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                      <FaPaypal className="text-blue-400" />
-                      PayPal Details
-                    </h3>
+                  <div className="bg-gradient-to-br from-cyan-50 to-blue-50/50 rounded-2xl p-6 border border-cyan-200">
+                    <div className="flex items-center gap-3 mb-5">
+                      <div className="w-10 h-10 bg-blue-400 rounded-xl flex items-center justify-center shadow-lg shadow-blue-400/25">
+                        <FaPaypal className="text-white text-lg" />
+                      </div>
+                      <h3 className="font-semibold text-gray-900 text-lg">PayPal Account</h3>
+                    </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        PayPal Email *
+                        PayPal Email <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="email"
                         value={paypalEmail}
                         onChange={(e) => setPaypalEmail(e.target.value)}
                         placeholder="your-email@example.com"
-                        className={`w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 ${errors.paypalEmail ? "border-red-500" : "border-gray-300"
-                          }`}
+                        className={`w-full px-4 py-3.5 border-2 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all ${
+                          errors.paypalEmail ? "border-red-300 bg-red-50" : "border-gray-200"
+                        }`}
                       />
                       {errors.paypalEmail && (
-                        <p className="text-red-600 text-sm mt-1">{errors.paypalEmail}</p>
+                        <p className="text-red-600 text-sm mt-2">⚠ {errors.paypalEmail}</p>
                       )}
-                      <p className="text-sm text-gray-600 mt-2">
-                        You'll be redirected to PayPal to complete your payment.
-                      </p>
+                      <div className="mt-3 p-3 bg-white rounded-lg border border-cyan-200">
+                        <p className="text-sm text-gray-700 flex items-start gap-2">
+                          <span className="text-blue-600 mt-0.5">ℹ</span>
+                          <span>You'll be redirected to PayPal to complete your secure payment.</span>
+                        </p>
+                      </div>
                     </div>
                   </div>
                 )}
 
                 {/* Security Notice */}
-                <div className="bg-blue-50 rounded-2xl p-4 border border-blue-200">
-                  <div className="flex items-start gap-3">
-                    <FaShieldAlt className="text-blue-600 text-xl mt-1 flex-shrink-0" />
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-5 border border-blue-200">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/25">
+                      <FaShieldAlt className="text-white text-lg" />
+                    </div>
                     <div>
-                      <h4 className="font-semibold text-blue-800">Secure Payment</h4>
-                      <p className="text-blue-700 text-sm mt-1">
-                        Your payment information is encrypted and secure. We do not store your card details.
+                      <h4 className="font-semibold text-gray-900 mb-1">Secure & Encrypted</h4>
+                      <p className="text-sm text-gray-700">
+                        Your payment is protected with 256-bit SSL encryption. We never store your card details.
                       </p>
                     </div>
                   </div>
                 </div>
 
                 {errors.payment && (
-                  <div className="bg-red-50 rounded-2xl p-4 border border-red-200">
-                    <p className="text-red-700 text-sm">{errors.payment}</p>
+                  <div className="bg-red-50 rounded-2xl p-5 border-2 border-red-200 animate-shake">
+                    <div className="flex items-start gap-3">
+                      <span className="text-red-600 text-xl flex-shrink-0">⚠</span>
+                      <div>
+                        <h4 className="font-semibold text-red-900 mb-1">Payment Failed</h4>
+                        <p className="text-red-700 text-sm">{errors.payment}</p>
+                      </div>
+                    </div>
                   </div>
                 )}
 
                 <button
                   type="submit"
                   disabled={processing}
-                  className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-4 px-8 rounded-2xl font-semibold text-lg hover:from-red-500 hover:to-red-600 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3"
+                  className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white py-4 px-8 rounded-xl font-semibold text-lg hover:shadow-2xl hover:shadow-red-500/25 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:shadow-none flex items-center justify-center gap-3 group"
                 >
                   {processing ? (
                     <>
-                      <FaSyncAlt className="animate-spin" />
-                      Processing Payment...
+                      <FaSyncAlt className="animate-spin text-xl" />
+                      <span>Processing Payment...</span>
                     </>
                   ) : (
                     <>
-                      <FaLock />
-                      Pay KES {calculateTotal().toLocaleString()}
+                      <FaLock className="group-hover:scale-110 transition-transform" />
+                      <span>Pay KES {calculateTotal().toLocaleString()}</span>
                     </>
                   )}
                 </button>
+
+                <p className="text-center text-sm text-gray-600">
+                  By completing this purchase, you agree to our Terms of Service
+                </p>
               </form>
             </div>
           </div>
 
           {/* Order Summary */}
           <div className="lg:w-1/3">
-            <div className="bg-white rounded-3xl shadow-2xl p-6 border border-gray-200 sticky top-8">
-              <h2 className="text-xl font-semibold text-gray-800 mb-6">Order Summary</h2>
+            <div className="bg-white rounded-3xl shadow-xl p-6 border border-gray-100 lg:sticky lg:top-8">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">Order Summary</h2>
 
-              <div className="space-y-4 mb-6">
+              <div className="space-y-3 mb-6 max-h-64 overflow-y-auto">
                 {designs.map((item, index) => (
-                  <div key={index} className="flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
-                    <img
-                      src={item.preview_url || item.image}
-                      alt={item.title}
-                      className="w-16 h-16 object-cover rounded-lg"
-                    />
-                    <div className="flex-1">
-                      <h3 className="font-medium text-gray-800 text-sm line-clamp-1">{item.title}</h3>
-                      <p className="text-gray-600 text-xs">{item.category}</p>
-                      <p className="text-red-600 font-semibold text-sm">KES {item.price?.toLocaleString()}</p>
+                  <div key={index} className="flex items-center gap-4 p-3 bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-xl border border-gray-200 hover:shadow-md transition-shadow">
+                    <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-200 shadow-inner">
+                      <img
+                        src={item.preview_url || item.image}
+                        alt={item.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-gray-900 text-sm line-clamp-1">{item.title}</h3>
+                      <p className="text-gray-600 text-xs capitalize">{item.category}</p>
+                      <p className="text-red-600 font-bold text-sm mt-1">KES {item.price?.toLocaleString()}</p>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="space-y-3 border-t border-gray-200 pt-4">
+              <div className="space-y-3 border-t-2 border-gray-200 pt-4 mb-6">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal</span>
-                  <span>KES {calculateTotal().toLocaleString()}</span>
+                  <span className="font-medium">KES {calculateTotal().toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Service Fee</span>
-                  <span>KES 0</span>
+                  <span className="font-medium">KES 0</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
-                  <span>Tax</span>
-                  <span>KES 0</span>
+                  <span>Tax (16% VAT)</span>
+                  <span className="font-medium">KES 0</span>
                 </div>
-                <div className="flex justify-between text-lg font-semibold text-gray-800 border-t border-gray-200 pt-3">
+                <div className="flex justify-between text-xl font-bold text-gray-900 border-t-2 border-gray-200 pt-4">
                   <span>Total</span>
                   <span className="text-red-600">KES {calculateTotal().toLocaleString()}</span>
                 </div>
               </div>
 
-              <div className="mt-6 text-center">
-                <p className="text-sm text-gray-600 flex items-center justify-center gap-2">
+              <div className="space-y-3">
+                <div className="flex items-center justify-center gap-2 text-sm text-gray-600 bg-green-50 py-3 px-4 rounded-xl border border-green-200">
                   <FaLock className="text-green-600" />
-                  Secure SSL Encryption
-                </p>
+                  <span className="font-medium">Secure SSL Encryption</span>
+                </div>
+                
+                <div className="grid grid-cols-3 gap-2 text-center text-xs text-gray-600">
+                  <div className="p-2 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="font-semibold text-gray-900">30-Day</div>
+                    <div>Money Back</div>
+                  </div>
+                  <div className="p-2 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="font-semibold text-gray-900">Instant</div>
+                    <div>Download</div>
+                  </div>
+                  <div className="p-2 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="font-semibold text-gray-900">24/7</div>
+                    <div>Support</div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
