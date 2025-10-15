@@ -37,7 +37,7 @@ function App() {
             <Route path="/designs/:id" element={<DesignDetails />} />
             <Route path="/cart" element={<CartPage />} />
            // WITH:
-            <Route path="/checkout/:design_id?" element={<PaymentPage />} />
+            <Route path="/checkout/:id" element={<PaymentPage />} />
             <Route path="/checkout/cart" element={<PaymentPage />} />
             {/* User dashboard */}
             <Route
