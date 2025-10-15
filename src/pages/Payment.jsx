@@ -44,34 +44,62 @@ const PaymentPage = () => {
   const designs = isCartPurchase ? cartItems : (design ? [design] : []);
 
   useEffect(() => {
+    console.log("🎯 PAYMENT PAGE MOUNTED - DEBUG INFO:");
+    console.log("📍 Current path:", location.pathname);
+    console.log("🎨 Design ID from URL:", id);
+    console.log("🔐 isAuthenticated:", isAuthenticated);
+    console.log("🛒 isCartPurchase:", location.pathname.includes('/checkout/cart'));
+    console.log("📦 cartItems count:", cartItems?.length || 0);
+
     if (!isAuthenticated) {
+      console.log("🚫 Not authenticated - redirecting to login");
       setLoading(false);
       navigate("/login", { state: { from: location.pathname } });
       return;
     }
 
-    if (isCartPurchase) {
-      // For cart purchases, use cart items
+    if (location.pathname.includes('/checkout/cart')) {
+      console.log("🛒 Cart purchase detected - using cart items");
+      console.log("📦 Cart items:", cartItems);
       setLoading(false);
     } else if (id) {
-      // For single design purchase, fetch design details
+      console.log("🎨 Single design purchase - fetching design ID:", id);
       fetchDesignDetails();
     } else {
-      // No design ID and not cart purchase - invalid state
+      console.log("❌ No design ID and not cart purchase - showing error state");
       setLoading(false);
-      navigate("/designs");
+      // REMOVED REDIRECTION - just set loading to false
     }
-  }, [id, isCartPurchase, isAuthenticated, navigate, location]);
+  }, [id, isAuthenticated, navigate, location, cartItems]);
+
+  // TEMPORARY: Add this to see if component renders when design loads
+  useEffect(() => {
+    if (design) {
+      console.log("🎉 DESIGN IS LOADED - Component should render payment form");
+      console.log("Design data:", design);
+    }
+  }, [design]);
 
   const fetchDesignDetails = async () => {
     try {
+      console.log("🔄 Starting API call to fetch design:", id);
       const response = await axios.get(`/api/designs/${id}`);
+      console.log("✅ API call successful - design data received");
+      console.log("Design title:", response.data.title);
+      console.log("Design price:", response.data.price);
       setDesign(response.data);
-      setLoading(false);  // ✅ ADD THIS LINE - stop loading after success
-    } catch (error) {
-      console.error("Error fetching design:", error);
+      console.log("✅ Design set in state, setting loading to false");
       setLoading(false);
-      navigate("/designs");
+    } catch (error) {
+      console.error("❌ Error fetching design:", error);
+      console.log("📊 Error details:", {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      setLoading(false);
+      // REMOVED REDIRECTION - just set error state
+      setErrors({ fetch: `Failed to load design: ${error.response?.data?.error || error.message}` });
     }
   };
 
@@ -195,18 +223,20 @@ const PaymentPage = () => {
     }
   ];
 
-  if (loading) {
+  // TEMPORARY: Modified loading check to see what's happening
+  if (loading && !design) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-red-50 to-gray-100 py-20">
         <div className="container mx-auto px-6 text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-red-600 mx-auto"></div>
           <p className="text-gray-600 mt-4 text-lg">Loading payment details...</p>
+          <p className="text-sm text-gray-500 mt-2">Debug: loading={loading.toString()}, design={design ? "loaded" : "null"}</p>
         </div>
       </div>
     );
   }
 
-  // If no designs to purchase, show error
+  // If no designs to purchase, show error (NO REDIRECTION)
   if (!isCartPurchase && !design) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-red-50 to-gray-100 py-20">
@@ -216,6 +246,11 @@ const PaymentPage = () => {
           <p className="text-gray-600 mb-6">
             It looks like there are no items in your cart or the design you're trying to purchase doesn't exist.
           </p>
+          {errors.fetch && (
+            <div className="bg-red-50 rounded-2xl p-4 border border-red-200 mb-4 max-w-md mx-auto">
+              <p className="text-red-700 text-sm">{errors.fetch}</p>
+            </div>
+          )}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => navigate("/designs")}
@@ -294,6 +329,12 @@ const PaymentPage = () => {
     );
   }
 
+  console.log("🎉 RENDERING PAYMENT FORM - FINAL STATE:");
+  console.log("loading:", loading);
+  console.log("design:", design);
+  console.log("isCartPurchase:", isCartPurchase);
+  console.log("designs count:", designs.length);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-red-50 to-gray-100 py-8">
       <div className="container mx-auto px-6 max-w-6xl">
@@ -311,6 +352,14 @@ const PaymentPage = () => {
                   Back
                 </button>
                 <h1 className="text-3xl font-bold text-gray-800">Complete Payment</h1>
+              </div>
+
+              {/* Debug Info - TEMPORARY */}
+              <div className="bg-blue-50 rounded-2xl p-4 mb-6 border border-blue-200">
+                <p className="text-blue-700 text-sm">
+                  <strong>Debug:</strong> Payment page loaded successfully! 
+                  {design && ` Design: ${design.title} - KES ${design.price}`}
+                </p>
               </div>
 
               {/* Payment Methods */}
