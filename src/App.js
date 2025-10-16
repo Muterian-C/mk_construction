@@ -22,6 +22,7 @@ import './styles/animations.css';
 import AdminDesignDetails from "./pages/admin/AdminDesignDetails";
 import PaymentPage from "./pages/Payment";
 import ManageOrders from "./pages/admin/ManageOrders";
+import Analytics from "./pages/admin/Analytics";
 
 function App() {
   return (
@@ -100,6 +101,14 @@ function App() {
               element={
                 <ProtectedRoute role="admin">
                   <ManageOrders />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/analytics"
+              element={
+                <ProtectedRoute role="admin">
+                  <Analytics />
                 </ProtectedRoute>
               }
             />
