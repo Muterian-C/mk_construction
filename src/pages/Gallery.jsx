@@ -96,8 +96,8 @@ export default function Gallery() {
         </div>
       </section>
 
-      {/* Filters & Search */}
-      <section className="py-8 bg-white/90 backdrop-blur-sm sticky top-0 z-10 shadow-sm">
+      {/* Filters & Search - REMOVED STICKY POSITIONING */}
+      <section className="py-8 bg-white/90 backdrop-blur-sm shadow-sm">
         <div className="container mx-auto px-6">
           <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
             {/* Search Bar */}
@@ -171,7 +171,7 @@ export default function Gallery() {
   );
 }
 
-// Design Card Component
+// Design Card Component (unchanged)
 const DesignCard = ({ design }) => (
   <div className="group relative bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100 overflow-hidden">
     {/* Design Image with Watermark Overlay */}
