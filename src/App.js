@@ -23,6 +23,9 @@ import AdminDesignDetails from "./pages/admin/AdminDesignDetails";
 import PaymentPage from "./pages/Payment";
 import ManageOrders from "./pages/admin/ManageOrders";
 import Analytics from "./pages/admin/Analytics";
+// In your App.jsx or routing file
+import ResetPassword from './pages/ResetPassword';
+
 
 function App() {
   return (
@@ -38,9 +41,9 @@ function App() {
             <Route path="/designs" element={<Gallery />} />
             <Route path="/designs/:id" element={<DesignDetails />} />
             <Route path="/cart" element={<CartPage />} />
-           // WITH:
             <Route path="/checkout/:id" element={<PaymentPage />} />
             <Route path="/checkout/cart" element={<PaymentPage />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             {/* User dashboard */}
             <Route
               path="/dashboard"
