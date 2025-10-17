@@ -438,7 +438,7 @@ const PaymentPage = () => {
                           value={phoneNumber}
                           onChange={(e) => setPhoneNumber(e.target.value)}
                           placeholder="0712 345 678 or +254712345678"
-                          className={`w-full px-5 py-4 bg-white/6 border-2 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-3 focus:ring-green-400 focus:ring-offset-2 focus:border-transparent transition-all duration-300 ${
+                          className={`w-full px-5 py-4 bg-white/6 border-2 rounded-2xl text-black placeholder-slate-400 focus:outline-none focus:ring-3 focus:ring-green-400 focus:ring-offset-2 focus:border-transparent transition-all duration-300 ${
                             errors.phoneNumber ? "border-red-400 bg-red-500/10" : "border-white/15 focus:border-green-400"
                           }`}
                         />
@@ -481,7 +481,7 @@ const PaymentPage = () => {
                             value={cardDetails.name}
                             onChange={(e) => setCardDetails(prev => ({ ...prev, name: e.target.value }))}
                             placeholder="John Doe"
-                            className={`w-full px-5 py-4 bg-white/6 border-2 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-3 focus:ring-blue-400 focus:ring-offset-2 focus:border-transparent transition-all duration-300 ${
+                            className={`w-full px-5 py-4 bg-white/6 border-2 rounded-2xl text-black placeholder-slate-400 focus:outline-none focus:ring-3 focus:ring-blue-400 focus:ring-offset-2 focus:border-transparent transition-all duration-300 ${
                               errors.cardName ? "border-red-400 bg-red-500/10" : "border-white/15 focus:border-blue-400"
                             }`}
                           />
@@ -498,7 +498,7 @@ const PaymentPage = () => {
                             onChange={(e) => setCardDetails(prev => ({ ...prev, number: e.target.value }))}
                             placeholder="1234 5678 9012 3456"
                             maxLength={19}
-                            className={`w-full px-5 py-4 bg-white/6 border-2 rounded-2xl text-white placeholder-slate-400 font-mono focus:outline-none focus:ring-3 focus:ring-blue-400 focus:ring-offset-2 focus:border-transparent transition-all duration-300 ${
+                            className={`w-full px-5 py-4 bg-white/6 border-2 rounded-2xl text-black placeholder-slate-400 font-mono focus:outline-none focus:ring-3 focus:ring-blue-400 focus:ring-offset-2 focus:border-transparent transition-all duration-300 ${
                               errors.cardNumber ? "border-red-400 bg-red-500/10" : "border-white/15 focus:border-blue-400"
                             }`}
                           />
@@ -516,7 +516,7 @@ const PaymentPage = () => {
                               onChange={(e) => setCardDetails(prev => ({ ...prev, expiry: e.target.value }))}
                               placeholder="MM/YY"
                               maxLength={5}
-                              className={`w-full px-5 py-4 bg-white/6 border-2 rounded-2xl text-white placeholder-slate-400 font-mono focus:outline-none focus:ring-3 focus:ring-blue-400 focus:ring-offset-2 focus:border-transparent transition-all duration-300 ${
+                              className={`w-full px-5 py-4 bg-white/6 border-2 rounded-2xl text-black placeholder-slate-400 font-mono focus:outline-none focus:ring-3 focus:ring-blue-400 focus:ring-offset-2 focus:border-transparent transition-all duration-300 ${
                                 errors.cardExpiry ? "border-red-400 bg-red-500/10" : "border-white/15 focus:border-blue-400"
                               }`}
                             />
@@ -533,7 +533,7 @@ const PaymentPage = () => {
                               onChange={(e) => setCardDetails(prev => ({ ...prev, cvv: e.target.value }))}
                               placeholder="123"
                               maxLength={4}
-                              className={`w-full px-5 py-4 bg-white/6 border-2 rounded-2xl text-white placeholder-slate-400 font-mono focus:outline-none focus:ring-3 focus:ring-blue-400 focus:ring-offset-2 focus:border-transparent transition-all duration-300 ${
+                              className={`w-full px-5 py-4 bg-white/6 border-2 rounded-2xl text-black placeholder-slate-400 font-mono focus:outline-none focus:ring-3 focus:ring-blue-400 focus:ring-offset-2 focus:border-transparent transition-all duration-300 ${
                                 errors.cardCvv ? "border-red-400 bg-red-500/10" : "border-white/15 focus:border-blue-400"
                               }`}
                             />
@@ -566,7 +566,7 @@ const PaymentPage = () => {
                           value={paypalEmail}
                           onChange={(e) => setPaypalEmail(e.target.value)}
                           placeholder="your-email@example.com"
-                          className={`w-full px-5 py-4 bg-white/6 border-2 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-3 focus:ring-cyan-400 focus:ring-offset-2 focus:border-transparent transition-all duration-300 ${
+                          className={`w-full px-5 py-4 bg-white/6 border-2 rounded-2xl text-black placeholder-slate-400 focus:outline-none focus:ring-3 focus:ring-cyan-400 focus:ring-offset-2 focus:border-transparent transition-all duration-300 ${
                             errors.paypalEmail ? "border-red-400 bg-red-500/10" : "border-white/15 focus:border-cyan-400"
                           }`}
                         />
