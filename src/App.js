@@ -25,6 +25,7 @@ import ManageOrders from "./pages/admin/ManageOrders";
 import Analytics from "./pages/admin/Analytics";
 // In your App.jsx or routing file
 import ResetPassword from './pages/ResetPassword';
+import AuthSuccess from "./pages/AuthSuccess";
 
 
 function App() {
@@ -44,6 +45,7 @@ function App() {
             <Route path="/checkout/:id" element={<PaymentPage />} />
             <Route path="/checkout/cart" element={<PaymentPage />} />
             <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/auth/google/success" element={<AuthSuccess />} />
             {/* User dashboard */}
             <Route
               path="/dashboard"
