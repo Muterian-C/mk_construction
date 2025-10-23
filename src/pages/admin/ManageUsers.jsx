@@ -49,7 +49,7 @@ const ManageUsers = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("/api/users");
+      const res = await axios.get("/api/admin/users");
       const usersWithStats = await Promise.all(
         res.data.map(async (user) => {
           try {

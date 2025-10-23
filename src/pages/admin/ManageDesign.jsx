@@ -41,7 +41,7 @@ const ManageDesigns = () => {
   const fetchDesigns = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("/api/get_designs");
+      const res = await axios.get("/api/designs");
       setDesigns(res.data);
       setFilteredDesigns(res.data);
     } catch (err) {

@@ -12,7 +12,8 @@ import {
   FaPlus, 
   FaBars,
   FaBox,
-  FaUserCircle
+  FaUserCircle,
+  FaExclamationTriangle
 } from "react-icons/fa";
 
 const AdminDashboard = () => {
@@ -22,20 +23,37 @@ const AdminDashboard = () => {
   const [userCount, setUserCount] = useState(0);
   const [orderCount, setOrderCount] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    api.get("/designs/count")
-      .then(res => setDesignCount(res.data.count))
-      .catch(err => console.error("Error fetching designs count:", err));
-
-    api.get("/users/count")
-      .then(res => setUserCount(res.data.count))
-      .catch(err => console.error("Error fetching users count:", err));
-
-    api.get("/orders/count")
-      .then(res => setOrderCount(res.data.count))
-      .catch(err => console.error("Error fetching orders count:", err));
+    fetchAdminStats();
   }, []);
+
+  const fetchAdminStats = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const response = await api.get("/api/admin/stats");
+      const data = response.data;
+      
+      setDesignCount(data.designs_count || 0);
+      setUserCount(data.users_count || 0);
+      // Note: Backend doesn't currently provide orders count
+      // This would need to be added to your backend
+      setOrderCount(0);
+      
+    } catch (err) {
+      console.error("Error fetching admin stats:", err);
+      setError("Failed to load dashboard statistics");
+      // Set default values on error
+      setDesignCount(0);
+      setUserCount(0);
+      setOrderCount(0);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const navItems = [
     { label: "Overview", icon: <FaTachometerAlt />, path: "/admin/dashboard", color: "from-red-500 to-red-600" },
@@ -50,23 +68,35 @@ const AdminDashboard = () => {
       value: designCount, 
       icon: <FaPalette className="text-3xl" />,
       color: "from-red-500 to-red-600",
-      bgColor: "bg-gradient-to-br from-red-50 to-red-100"
+      bgColor: "bg-gradient-to-br from-red-50 to-red-100",
+      description: "Designs in catalog"
     },
     { 
       label: "Total Users", 
       value: userCount, 
       icon: <FaUsers className="text-3xl" />,
       color: "from-red-600 to-red-700",
-      bgColor: "bg-gradient-to-br from-red-100 to-red-200"
+      bgColor: "bg-gradient-to-br from-red-100 to-red-200",
+      description: "Registered users"
     },
     { 
       label: "Total Orders", 
       value: orderCount, 
       icon: <FaBox className="text-3xl" />,
       color: "from-red-700 to-red-800",
-      bgColor: "bg-gradient-to-br from-red-200 to-red-300"
+      bgColor: "bg-gradient-to-br from-red-200 to-red-300",
+      description: "Orders placed"
     }
   ];
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
+  const handleRetry = () => {
+    fetchAdminStats();
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-red-50 to-gray-100 flex">
@@ -111,11 +141,12 @@ const AdminDashboard = () => {
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-white truncate">{user?.name || "Admin"}</p>
                 <p className="text-gray-400 text-sm truncate">{user?.email}</p>
+                <p className="text-red-400 text-xs font-medium mt-1">{user?.role || "user"}</p>
               </div>
             </div>
             
             <button
-              onClick={logout}
+              onClick={handleLogout}
               className="group flex items-center gap-3 w-full p-4 bg-gradient-to-r from-red-700 to-red-800 hover:from-red-600 hover:to-red-700 text-white rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-red-400/25"
             >
               <FaSignOutAlt className="group-hover:rotate-180 transition-transform duration-300" />
@@ -168,6 +199,27 @@ const AdminDashboard = () => {
           </div>
         </header>
 
+        {/* Error Message */}
+        {error && (
+          <div className="mb-6 bg-red-50 border border-red-200 rounded-2xl p-6 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-red-100 rounded-xl">
+                <FaExclamationTriangle className="text-red-600 text-xl" />
+              </div>
+              <div>
+                <p className="text-red-800 font-medium">{error}</p>
+                <p className="text-red-600 text-sm">Please check your connection and try again</p>
+              </div>
+            </div>
+            <button
+              onClick={handleRetry}
+              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl font-medium transition-colors duration-200"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 mb-8">
           {stats.map((stat, index) => (
@@ -176,20 +228,33 @@ const AdminDashboard = () => {
               className="group relative bg-white rounded-3xl p-6 lg:p-8 shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100"
             >
               <div className={`absolute inset-0 rounded-3xl bg-gradient-to-r ${stat.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}></div>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-gray-600 font-medium mb-2">{stat.label}</p>
-                  <p className={`text-4xl lg:text-5xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
-                    {stat.value}
-                  </p>
+              
+              {loading ? (
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="h-4 bg-gray-200 rounded mb-3 w-3/4 animate-pulse"></div>
+                    <div className="h-8 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+                  </div>
+                  <div className="w-16 h-16 bg-gray-200 rounded-2xl animate-pulse"></div>
                 </div>
-                <div className={`p-4 rounded-2xl bg-gradient-to-r ${stat.color} text-white group-hover:scale-110 transition-transform duration-300`}>
-                  {stat.icon}
-                </div>
-              </div>
-              <div className="mt-4 pt-4 border-t border-gray-100">
-                <p className="text-sm text-gray-500">Last updated: Just now</p>
-              </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-600 font-medium mb-2">{stat.label}</p>
+                      <p className={`text-4xl lg:text-5xl font-bold bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
+                        {stat.value.toLocaleString()}
+                      </p>
+                    </div>
+                    <div className={`p-4 rounded-2xl bg-gradient-to-r ${stat.color} text-white group-hover:scale-110 transition-transform duration-300`}>
+                      {stat.icon}
+                    </div>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <p className="text-sm text-gray-500">{stat.description}</p>
+                  </div>
+                </>
+              )}
             </div>
           ))}
         </div>
@@ -225,7 +290,9 @@ const AdminDashboard = () => {
           <div className="text-center py-12">
             <div className="text-6xl mb-4">📈</div>
             <p className="text-gray-600">Activity feed will appear here</p>
-            <p className="text-gray-500 text-sm">Recent user actions and system events</p>
+            <p className="text-gray-500 text-sm">
+              {loading ? "Loading..." : "Recent user actions and system events"}
+            </p>
           </div>
         </div>
       </main>
