@@ -18,7 +18,7 @@ export default function Gallery() {
   ];
 
   useEffect(() => {
-    api.get("/api/get_designs")
+    api.get("/api/designs")
       .then((res) => {
         setDesigns(res.data);
         setFilteredDesigns(res.data);
