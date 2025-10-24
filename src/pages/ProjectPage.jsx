@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { 
+import {
   FaHome,
   FaBuilding,
   FaWarehouse,
@@ -208,11 +208,11 @@ const Projects = () => {
   const filteredDesigns = featuredDesigns.filter(design => {
     const matchesCategory = selectedCategory === "all" || design.category === selectedCategory;
     const matchesSearch = design.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesPrice = priceRange === "all" || 
+    const matchesPrice = priceRange === "all" ||
       (priceRange === "low" && design.price < 10000) ||
       (priceRange === "mid" && design.price >= 10000 && design.price < 20000) ||
       (priceRange === "high" && design.price >= 20000);
-    
+
     return matchesCategory && matchesSearch && matchesPrice;
   });
 
@@ -233,13 +233,13 @@ const Projects = () => {
           <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-red-600/20 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-red-800/10 rounded-full blur-3xl animate-pulse"></div>
         </div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center bg-red-600/20 backdrop-blur-sm border border-red-500/30 px-6 py-3 rounded-full text-red-200 mb-6">
             <span className="w-2 h-2 bg-red-400 rounded-full mr-2 animate-pulse"></span>
             500+ Professional Designs Available
           </div>
-          
+
           <h1 className="text-5xl lg:text-7xl font-black mb-6 leading-tight">
             Our <span className="bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent">Projects</span>
           </h1>
@@ -262,7 +262,7 @@ const Projects = () => {
         <section className="mb-16">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
             {stats.map((stat, index) => (
-              <div 
+              <div
                 key={index}
                 className="bg-white rounded-2xl shadow-lg hover:shadow-xl p-6 text-center transition-all duration-300 transform hover:-translate-y-1 border border-gray-200"
               >
@@ -344,21 +344,19 @@ const Projects = () => {
               <div className="md:col-span-2 flex gap-2">
                 <button
                   onClick={() => setViewMode("grid")}
-                  className={`flex-1 flex items-center justify-center px-4 py-3 rounded-xl transition-all duration-300 ${
-                    viewMode === "grid"
+                  className={`flex-1 flex items-center justify-center px-4 py-3 rounded-xl transition-all duration-300 ${viewMode === "grid"
                       ? "bg-red-600 text-white"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
+                    }`}
                 >
                   <FaTh />
                 </button>
                 <button
                   onClick={() => setViewMode("list")}
-                  className={`flex-1 flex items-center justify-center px-4 py-3 rounded-xl transition-all duration-300 ${
-                    viewMode === "list"
+                  className={`flex-1 flex items-center justify-center px-4 py-3 rounded-xl transition-all duration-300 ${viewMode === "list"
                       ? "bg-red-600 text-white"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
+                    }`}
                 >
                   <FaList />
                 </button>
@@ -393,11 +391,10 @@ const Projects = () => {
           {/* Design Grid/List */}
           <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-6"}>
             {filteredDesigns.map((design) => (
-              <div 
+              <div
                 key={design.id}
-                className={`group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 ${
-                  viewMode === "list" ? "flex" : ""
-                }`}
+                className={`group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 ${viewMode === "list" ? "flex" : ""
+                  }`}
               >
                 {/* Image */}
                 <div className={`relative overflow-hidden ${viewMode === "list" ? "w-1/3" : "h-64"}`}>
@@ -406,7 +403,7 @@ const Projects = () => {
                     alt={design.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
-                  
+
                   {/* Watermark Overlay */}
                   <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
                     <div className="text-white/30 text-2xl font-bold transform -rotate-12">
@@ -546,7 +543,7 @@ const Projects = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {builtProjects.map((project) => (
-              <div 
+              <div
                 key={project.id}
                 className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200"
               >
@@ -584,7 +581,7 @@ const Projects = () => {
           <div className="bg-gradient-to-r from-red-600 to-red-800 rounded-3xl shadow-2xl p-8 lg:p-12 text-white text-center relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-black/10 rounded-full blur-3xl"></div>
-            
+
             <div className="relative">
               <h2 className="text-3xl lg:text-4xl font-bold mb-4">
                 Ready to Start Your Project?
@@ -592,20 +589,25 @@ const Projects = () => {
               <p className="text-xl text-gray-100 mb-8 max-w-2xl mx-auto">
                 Browse our full collection or contact us for custom design services
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="bg-white text-gray-900 font-bold px-8 py-4 rounded-xl hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center">
-                  View All Designs
-                  <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </button>
-                <button className="bg-white/20 hover:bg-white/30 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 transform hover:scale-105 border border-white/30 backdrop-blur-sm flex items-center justify-center">
-                  Contact for Custom Design
-                  <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                  </svg>
-                </button>
+                <Link to="/designs">
+                  <button className="bg-white text-gray-900 font-bold px-8 py-4 rounded-xl hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center">
+                    View All Designs
+                    <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </button>
+                </Link>
+
+                <Link to="/contact">
+                  <button className="bg-white/20 hover:bg-white/30 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 transform hover:scale-105 border border-white/30 backdrop-blur-sm flex items-center justify-center">
+                    Contact for Custom Design
+                    <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                  </button>
+                </Link>
               </div>
             </div>
           </div>
