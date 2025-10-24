@@ -28,6 +28,7 @@ import ResetPassword from './pages/ResetPassword';
 import AuthSuccess from "./pages/AuthSuccess";
 import AboutUs from "./pages/AboutUs"
 import Services from "./pages/OurServices";
+import Contact from "./pages/ContactPage";
 
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
             <Route path="/checkout/cart" element={<PaymentPage />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/services" element={<Services />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/auth/google/success" element={<AuthSuccess />} />
             {/* User dashboard */}
