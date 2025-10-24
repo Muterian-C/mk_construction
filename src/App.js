@@ -26,6 +26,7 @@ import Analytics from "./pages/admin/Analytics";
 // In your App.jsx or routing file
 import ResetPassword from './pages/ResetPassword';
 import AuthSuccess from "./pages/AuthSuccess";
+import AboutUs from "./pages/AboutUs"
 
 
 function App() {
