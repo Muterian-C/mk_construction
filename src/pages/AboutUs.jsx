@@ -1,8 +1,9 @@
 import React from "react";
-import { 
-  FaRocket, 
-  FaEye, 
-  FaBullseye, 
+import { Link } from "react-router-dom";
+import {
+  FaRocket,
+  FaEye,
+  FaBullseye,
   FaShieldAlt,
   FaLightbulb,
   FaUsers,
@@ -88,13 +89,13 @@ const AboutUs = () => {
           <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-red-600/20 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-red-800/10 rounded-full blur-3xl animate-pulse"></div>
         </div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center bg-red-600/20 backdrop-blur-sm border border-red-500/30 px-6 py-3 rounded-full text-red-200 mb-6">
             <span className="w-2 h-2 bg-red-400 rounded-full mr-2 animate-pulse"></span>
             Your Digital Architecture Marketplace
           </div>
-          
+
           <h1 className="text-5xl lg:text-7xl font-black mb-6 leading-tight">
             About <span className="bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent">MK Construction</span>
           </h1>
@@ -207,7 +208,7 @@ const AboutUs = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {platformFeatures.map((feature, index) => (
-              <div 
+              <div
                 key={index}
                 className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl p-6 text-center transition-all duration-300 transform hover:-translate-y-2 border border-gray-100"
               >
@@ -243,7 +244,7 @@ const AboutUs = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {whyChooseUs.map((item, index) => (
-              <div 
+              <div
                 key={index}
                 className="group bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg hover:shadow-xl p-6 border border-gray-200 transition-all duration-300 hover:-translate-y-1"
               >
@@ -270,7 +271,7 @@ const AboutUs = () => {
           <div className="bg-gradient-to-r from-red-600 to-red-800 rounded-3xl shadow-2xl p-8 lg:p-12 text-white text-center relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-black/10 rounded-full blur-3xl"></div>
-            
+
             <div className="relative">
               <div className="flex justify-center mb-6">
                 <div className="p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
@@ -283,7 +284,7 @@ const AboutUs = () => {
               <p className="text-xl lg:text-2xl leading-relaxed max-w-4xl mx-auto text-gray-100 mb-8">
                 At <span className="font-bold text-yellow-300">MK Construction</span>, we're committed to transparency, quality, and accessibility. Every design is professionally crafted, every transaction is secure, and every customer gets lifetime access to their purchases. We don't just sell designs—we empower dreams.
               </p>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 max-w-4xl mx-auto">
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
                   <FaLock className="text-3xl text-yellow-300 mb-3 mx-auto" />
@@ -303,18 +304,23 @@ const AboutUs = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="group bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold px-8 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center">
-                  Browse Design Library
-                  <svg className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </button>
-                <button className="bg-white/20 hover:bg-white/30 text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 border border-white/30 backdrop-blur-sm flex items-center justify-center">
-                  Learn How It Works
-                  <svg className="w-5 h-5 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </button>
+                <Link to="/designs">
+                  <button className="group bg-yellow-400 hover:bg-yellow-300 text-gray-900 font-bold px-8 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center">
+                    Browse Design Library
+                    <svg className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </button>
+                </Link>
+
+                <Link to="/about">
+                  <button className="bg-white/20 hover:bg-white/30 text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 border border-white/30 backdrop-blur-sm flex items-center justify-center">
+                    Learn How It Works
+                    <svg className="w-5 h-5 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -331,7 +337,7 @@ const AboutUs = () => {
                 Every aspect of our platform is designed with your success in mind
               </p>
             </div>
-            
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
               {[
                 { icon: "🛡️", label: "Secure Payments" },

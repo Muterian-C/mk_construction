@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { 
+import { Link } from "react-router-dom";
+import {
   FaPhone,
   FaEnvelope,
   FaMapMarkerAlt,
@@ -37,7 +38,7 @@ const Contact = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setStatus('sending');
-    
+
     setTimeout(() => {
       setStatus('success');
       setFormData({
@@ -48,7 +49,7 @@ const Contact = () => {
         category: '',
         message: ''
       });
-      
+
       setTimeout(() => setStatus(''), 3000);
     }, 1500);
   };
@@ -131,13 +132,13 @@ const Contact = () => {
           <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-red-600/20 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-red-800/10 rounded-full blur-3xl animate-pulse"></div>
         </div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center bg-red-600/20 backdrop-blur-sm border border-red-500/30 px-6 py-3 rounded-full text-red-200 mb-6">
             <span className="w-2 h-2 bg-red-400 rounded-full mr-2 animate-pulse"></span>
             We're Here to Help
           </div>
-          
+
           <h1 className="text-5xl lg:text-7xl font-black mb-6 leading-tight">
             Get in <span className="bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent">Touch</span>
           </h1>
@@ -160,7 +161,7 @@ const Contact = () => {
         <section className="mb-20">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {contactInfo.map((info, index) => (
-              <div 
+              <div
                 key={index}
                 className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl p-6 text-center transition-all duration-300 transform hover:-translate-y-2 border border-gray-200"
               >
@@ -200,7 +201,7 @@ const Contact = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {supportCategories.map((category, index) => (
-              <div 
+              <div
                 key={index}
                 className="group bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-lg hover:shadow-xl p-6 border border-gray-200 transition-all duration-300 hover:-translate-y-1"
               >
@@ -376,8 +377,8 @@ const Contact = () => {
                   Follow us on social media for updates, design inspiration, and special offers
                 </p>
                 <div className="space-y-4">
-                  <a 
-                    href="https://www.facebook.com/share/1FHARkdEPc/" 
+                  <a
+                    href="https://www.facebook.com/share/1FHARkdEPc/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm p-4 rounded-xl transition-all duration-300 group border border-white/20"
@@ -387,7 +388,7 @@ const Contact = () => {
                     </div>
                     <span className="font-semibold">Facebook</span>
                   </a>
-                  <a 
+                  <a
                     href="https://x.com/mkstudioke?t=S1uCFYYQa_nY9AxKkB3dVg&s=09"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -398,7 +399,7 @@ const Contact = () => {
                     </div>
                     <span className="font-semibold">Twitter/X</span>
                   </a>
-                  <a 
+                  <a
                     href="https://www.instagram.com/invites/contact/?utm_source=ig_contact_invite&utm_medium=copy_link&utm_content=r9j9168"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -409,7 +410,7 @@ const Contact = () => {
                     </div>
                     <span className="font-semibold">Instagram</span>
                   </a>
-                  <a 
+                  <a
                     href="http://tiktok.com/@mk_constr.groupke"
                     target="_blank"
                     rel="noopener noreferrer"
@@ -420,7 +421,7 @@ const Contact = () => {
                     </div>
                     <span className="font-semibold">TikTok</span>
                   </a>
-                  <a 
+                  <a
                     href="#"
                     className="flex items-center gap-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm p-4 rounded-xl transition-all duration-300 group border border-white/20"
                   >
@@ -465,7 +466,7 @@ const Contact = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {faqs.map((faq, index) => (
-              <div 
+              <div
                 key={index}
                 className="bg-white rounded-2xl shadow-lg hover:shadow-xl p-6 border border-gray-200 transition-all duration-300"
               >
@@ -486,7 +487,7 @@ const Contact = () => {
           <div className="bg-gradient-to-r from-red-600 to-red-800 rounded-3xl shadow-2xl p-8 lg:p-12 text-white text-center relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-black/10 rounded-full blur-3xl"></div>
-            
+
             <div className="relative">
               <h2 className="text-3xl lg:text-4xl font-bold mb-4">
                 Didn't Find What You're Looking For?
@@ -494,20 +495,25 @@ const Contact = () => {
               <p className="text-xl text-gray-100 mb-8 max-w-2xl mx-auto">
                 Browse our design collection or check out our comprehensive help center
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="bg-white text-gray-900 font-bold px-8 py-4 rounded-xl hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center">
-                  Browse Designs
-                  <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </button>
-                <button className="bg-white/20 hover:bg-white/30 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 transform hover:scale-105 border border-white/30 backdrop-blur-sm flex items-center justify-center">
-                  Visit Help Center
-                  <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </button>
+                <Link to="/designs">
+                  <button className="bg-white text-gray-900 font-bold px-8 py-4 rounded-xl hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center">
+                    Browse Designs
+                    <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </button>
+                </Link>
+
+                <Link to="/contact">
+                  <button className="bg-white/20 hover:bg-white/30 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 transform hover:scale-105 border border-white/30 backdrop-blur-sm flex items-center justify-center">
+                    Visit Help Center
+                    <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </button>
+                </Link>
               </div>
             </div>
           </div>
