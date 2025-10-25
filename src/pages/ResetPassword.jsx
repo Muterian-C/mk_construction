@@ -17,7 +17,6 @@ export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [tokenValid, setTokenValid] = useState(null);
-
   // Validate token on component mount
   useEffect(() => {
     if (!token) {

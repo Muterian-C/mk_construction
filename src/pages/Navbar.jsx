@@ -28,7 +28,6 @@ export default function Navbar() {
                 alt="MK Construction"
                 className="w-10 h-10 object-cover rounded-lg"
               />
-
             </div>
             <div className="absolute -inset-1 bg-red-500/20 rounded-lg blur-sm group-hover:blur-md transition-all duration-300"></div>
           </div>

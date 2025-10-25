@@ -427,8 +427,7 @@ const PaymentPage = () => {
                           <h3 className="font-bold text-white text-xl mb-1 tracking-tight">M-Pesa Payment</h3>
                           <p className="text-emerald-200">Instant & secure mobile payment</p>
                         </div>
-                      </div>
-                      
+                      </div>                      
                       <div>
                         <label className="block text-white font-semibold mb-4 tracking-tight">
                           Phone Number <span className="text-red-400">*</span>

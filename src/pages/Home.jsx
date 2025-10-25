@@ -129,7 +129,6 @@ export default function Home() {
                 <span className="w-2 h-2 bg-red-400 rounded-full mr-2 animate-pulse"></span>
                 Premium Architectural Designs
               </div>
-
               <h1 className="text-6xl md:text-8xl font-black mb-8 leading-tight">
                 Build Your
                 <span className="block bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent">

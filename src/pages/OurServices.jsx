@@ -183,7 +183,6 @@ const Services = () => {
                         ))}
                     </div>
                 </div>
-
                 {/* Wave Divider */}
                 <div className="absolute bottom-0 left-0 w-full overflow-hidden">
                     <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="relative block w-full h-16 md:h-20">
